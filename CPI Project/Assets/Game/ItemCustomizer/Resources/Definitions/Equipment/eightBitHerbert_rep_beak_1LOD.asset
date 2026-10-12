@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2ea87c845033af1bf71a7294a73f9a4, type: 3}
-  m_Name: eightBitHerbert_rep_head_1LOD
+  m_Name: eightBitHerbert_rep_beak_1LOD
   m_EditorClassIdentifier: 
   SkinnedMesh:
-    Name: head
-    Mesh: {fileID: -7070831255929112694, guid: 11622892bb8c3524eaf4fe72aeafd5e3, type: 3}
+    Name: beak
+    Mesh: {fileID: 6304082629547416945, guid: 11622892bb8c3524eaf4fe72aeafd5e3, type: 3}
     RootBoneName: chest_jnt
     BoneNames:
     - chest_jnt
