@@ -30241,16 +30241,6 @@ MonoBehaviour:
       Key: HolidayPlainMaterials/WallLampOnNOFOG
       type: UnityEngine.Material, UnityEngine
     DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/DisneyStoreLampNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/DisneyStoreLampNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
   - SwapTarget: {fileID: 1253}
     SwapMaterialKey:
       Key: HolidayPlainMaterials/TrainNOFOG
@@ -30259,21 +30249,6 @@ MonoBehaviour:
   - SwapTarget: {fileID: 1424995991023326886}
     SwapMaterialKey:
       Key: HolidayPlainMaterials/ToIglooSignNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/ArendelleWreathNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/ArendelleWreathNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/ArendelleWreathNOFOG
       type: UnityEngine.Material, UnityEngine
     DestroyTexture: 0
   - SwapTarget: {fileID: 3140}
