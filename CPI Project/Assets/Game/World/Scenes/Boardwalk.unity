@@ -180843,11 +180843,6 @@ MonoBehaviour:
       Key: HolidayPlainMaterials/BoardwalkShimmerAtlasNOFOG
       type: UnityEngine.Material, UnityEngine
     DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/PartySuppliesSignNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
   - SwapTarget: {fileID: 1460733021}
     SwapMaterialKey:
       Key: HolidayPlainMaterials/PartySuppliesSignNOFOG
@@ -180924,11 +180919,6 @@ MonoBehaviour:
       type: UnityEngine.Material, UnityEngine
     DestroyTexture: 0
   - SwapTarget: {fileID: 1460733022}
-    SwapMaterialKey:
-      Key: HolidayPlainMaterials/PartySuppliesSignNOFOG
-      type: UnityEngine.Material, UnityEngine
-    DestroyTexture: 0
-  - SwapTarget: {fileID: 0}
     SwapMaterialKey:
       Key: HolidayPlainMaterials/PartySuppliesSignNOFOG
       type: UnityEngine.Material, UnityEngine
