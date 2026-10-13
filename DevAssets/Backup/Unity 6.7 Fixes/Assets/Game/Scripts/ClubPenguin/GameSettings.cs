@@ -13,6 +13,7 @@ using Tweaker.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ClubPenguin.Core;
+using ClubPenguin.Halloween;
 
 namespace ClubPenguin
 {
@@ -669,7 +670,8 @@ namespace ClubPenguin
         [Invokable("CFC.ResetTotal", Description = "Resets the PlayerPrefs for the Coins for Change total back to 0. Note: This will reset all donations for every player.")]
         public void ResetCFCTotal()
         {
-            CoinsForChangeTracker cfc = UnityEngine.Object.FindAnyObjectByType<CoinsForChangeTracker>();
+            ProgressOverTime.ResetDeviceDonationProgress();
+            CoinsForChangeTracker cfc = UnityEngine.Object.FindFirstObjectByType<CoinsForChangeTracker>();
             if (cfc != null)
             {
                 cfc.ResetCoinCount();

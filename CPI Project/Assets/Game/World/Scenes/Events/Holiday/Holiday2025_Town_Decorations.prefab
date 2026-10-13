@@ -11414,6 +11414,9 @@ MonoBehaviour:
   MinValue: 0
   MaxValue: 0.964
   FinalValue: 1.07
+  UsePersonalCfcDonations: 1
+  DonationProgressId: Holiday2026TownMeter1
+  DonationCoinsToFill: 1500
   DateDefinitionKey:
     Id: 45
     type: ClubPenguin.Core.ScheduledEventDateDefinition, Core
@@ -34867,6 +34870,9 @@ MonoBehaviour:
   MinValue: 0
   MaxValue: 0.964
   FinalValue: 1.07
+  UsePersonalCfcDonations: 1
+  DonationProgressId: Holiday2026TownMeter2
+  DonationCoinsToFill: 1500
   DateDefinitionKey:
     Id: 45
     type: ClubPenguin.Core.ScheduledEventDateDefinition, Core
@@ -56231,6 +56237,9 @@ MonoBehaviour:
   MinValue: 0
   MaxValue: 0.964
   FinalValue: 1.07
+  UsePersonalCfcDonations: 1
+  DonationProgressId: Holiday2026TownMeter3
+  DonationCoinsToFill: 1500
   DateDefinitionKey:
     Id: 45
     type: ClubPenguin.Core.ScheduledEventDateDefinition, Core
@@ -57677,6 +57686,9 @@ MonoBehaviour:
   MinValue: 0
   MaxValue: 0.964
   FinalValue: 1.07
+  UsePersonalCfcDonations: 1
+  DonationProgressId: Holiday2026TownMeter4
+  DonationCoinsToFill: 1500
   DateDefinitionKey:
     Id: 45
     type: ClubPenguin.Core.ScheduledEventDateDefinition, Core
