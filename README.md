@@ -210,6 +210,8 @@
 
 > [Thunder](https://github.com/Ivorplayz)
 
+> [Koloway](https://github.com/Koloway)
+
 > [Maksim](https://github.com/loozmax)
 
 > miraculizado (Discord)
