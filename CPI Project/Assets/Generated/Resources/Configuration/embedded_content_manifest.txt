@@ -10643,19 +10643,6 @@ asset:world/interactables/actionbuttonrequestrule?dl=res&x=asset
 asset:world/scenes?dl=res&x=asset
 asset:world/worlds?dl=res&x=asset
 asset:world/zones?dl=res&x=asset
-asset:furniture/events/penguincup2018/bleachers/bleachers?dl=res&x=prefab
-asset:furniture/events/penguincup2018/bleachers/bleachers_furnitureicon?dl=res&x=png
-asset:furniture/events/penguincup2018/penguincup2018/penguincup2018?dl=res&x=prefab
-asset:furniture/events/penguincup2018/penguincup2018/penguincup2018_furnitureicon?dl=res&x=png
-asset:furniture/events/penguincup2018/soccerball/soccerball?dl=res&x=prefab
-asset:furniture/events/penguincup2018/soccerball/soccerball_furnitureicon?dl=res&x=png
-asset:furniture/events/penguincup2018/soccerball/soccerball_kicktest_01?dl=res&x=prefab
-asset:furniture/events/penguincup2018/soccerball/soccerball_nokick_01?dl=res&x=prefab
-asset:furniture/events/penguincup2018/soccernet/soccernet?dl=res&x=prefab
-asset:furniture/events/penguincup2018/soccernet/soccernet_furnitureicon?dl=res&x=png
-asset:furniture/events/penguincup2018/soccerpitch/soccerpitch?dl=res&x=prefab
-asset:furniture/events/penguincup2018/soccerpitch/soccerpitch_furnitureicon?dl=res&x=png
-asset:furniture/events/summersplash/inflatblepalmtree/inflatablepalmtree?dl=res&x=prefab
 asset:scenes/defaultigloo/lightingdata?dl=res&x=asset
 asset:scenes/defaultigloo/lightmap-0_comp_light?dl=res&x=exr
 asset:scenes/defaultigloo/lightmap-1_comp_light?dl=res&x=exr
@@ -11402,6 +11389,7 @@ asset:avatar/equipment/watch/watch_icon?dl=bundle:sa-bundle&x=png&b=assetbundles
 asset:quests/aac002q004icy/zones/herbertbase/objects/animations/herbertbaselaseroutside_laserartblinkingh?dl=bundle:sa-bundle&x=anim&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q04.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/global_pizzaeatpizza/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/decal_monsters_university_mike?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:furniture/events/penguincup2018/bleachers/bleachers?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/icebergcheese/watchers/watchergroup_icebergcheese?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/rockhopper/blizslimewaterfall.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:lighting/menuicon/lighting_icon_sunset?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
@@ -11527,7 +11515,7 @@ asset:definitions/tasks/rockhopper/cannonup.reward?dl=bundle:sa-bundle&x=asset&b
 asset:tasks/migratoreat5000/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:furniture/level0/cookingkit/cookingkit_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level00.sa.unity3d&p=modules/igloo/assetbundles
 asset:decals/decal_easter_flowers?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
-asset:furniture/events/summersplash/inflatblepalmtree/inflatblepalmtree?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
+asset:furniture/events/summersplash/inflatblepalmtree/inflatablepalmtree?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/townflagsing/watchers/groupwatcher_townflagsing?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:furniture/events/worldpenguinday2017/globebeanbagchair/globebeanbagchair_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:furniture/events/medievalparty2018/castlewall/castlewall?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
@@ -11691,6 +11679,7 @@ asset:furniture/events/blizzardbeach/blizzardbeachbeachchair/blizzardbeachbeachc
 asset:quests/rhc001q008goodimpressions/zones/beach/triggers/triggerpuzzle2equiphint?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/rockhopper/c01q08.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/divingtrapcrowd/watchers/watchergroup_divingtrapcrowd?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:ui/igloolist/iglooowneravatarcontainer?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
+asset:furniture/events/penguincup2018/soccerpitch/soccerpitch_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/boardwalkpicnic4/watchers/teamwork_boardwalkpicnic4?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/fabric_pirate_wornleather?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/decal_pirate_anchor?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
@@ -12489,6 +12478,7 @@ asset:avatar/equipment/spikeyanime/spikeyanime_icon?dl=bundle:sa-bundle&x=png&b=
 asset:quests/aac002q002view/zones/beach/objects/jetpackfuel/jetpackfuel?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q02.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/earthday2017_task1/watchers/watcheremote_earthday2017_task1?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/fabric_starter_yellowplaid?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:furniture/events/penguincup2018/soccernet/soccernet?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:decals/fabric_aach2_bush?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:furniture/level20/stagecurtain/stagecurtain_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level20.sa.unity3d&p=modules/igloo/assetbundles
 asset:definitions/tasks/rockhopper/beachairbag?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
@@ -13174,6 +13164,7 @@ asset:furniture/events/halloweenparty2018/gazingcrystal/gazingcrystal_furniturei
 asset:tasks/stairserenade/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/aac002q009treasure/mascots/dialog/aac002q009hunting-aa?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q09.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/towndancecheer/watchers/watcheraction_towndancecheer?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
+asset:furniture/events/penguincup2018/soccerpitch/soccerpitch?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:avatar/equipment/fantasyfootballpads/fantasyfootballpads_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:quests/aac002q006stolen/zones/beach/objects/herbertbasemini/animations/herbertbasewaterpos2lift?dl=bundle:sa-bundle&x=anim&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q06.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/aac002q004icy/zones/herbertbase/objects/animations/herbertbaselaserchallenge2_idle?dl=bundle:sa-bundle&x=anim&b=assetbundles/generated/standalonewindows64/quest/auntarctic.sa.unity3d&p=game/adventure/assetbundles
@@ -13431,6 +13422,7 @@ asset:decals/defaultswatch3?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/s
 asset:definitions/structurerenderdata/defaultstructurerenderdata?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/campgroundtent/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/rookie/migratoreatshared?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
+asset:furniture/events/penguincup2018/soccernet/soccernet_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:lighting/menuicon/lighting_icon_holiday?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/descendantsstage/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:furniture/events/medievalparty2018/torchbannerfluffy/torchbannerfluffy?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
@@ -14467,6 +14459,7 @@ asset:definitions/tasks/rookie/mtblizzfooddeliver?dl=bundle:sa-bundle&x=asset&b=
 asset:quests/rkc001q003tube/mascots/dialog/rkc001q003.aa.obj2.gettube?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest/rookie/c01q03.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/auntarctic/mtblizzplay2500?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/djc001q003meeting/fsm/questfsm.djc001q003meeting.obj7?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest/djcadence/c01q03.sa.unity3d&p=game/adventure/assetbundles
+asset:furniture/events/penguincup2018/soccerball/soccerball_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/foodtrekkercook/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/rkc002q005colder/zones/mtblizzardsummit/triggers/triggerpickuptabletpiece04?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/rookie/c02q05.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/decal_starter_penglantis?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
@@ -14711,6 +14704,7 @@ asset:definitions/tasks/auntarctic/beachairbag10.reward?dl=bundle:sa-bundle&x=as
 asset:quests/rkc002q001peak/fsm/questfsm.rkc002q001peak.obj5?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest/rookie/c02q01.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/worldpartyblaster5000/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/decal_prom_emeralds?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:furniture/events/penguincup2018/soccerball/soccerball?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:definitions/tasks/rookie/dontmakemeolaf.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/rockhopper/beachwheels.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/sharkteethclimb/watchers/watcher_sharkteethclimb?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
@@ -15005,6 +14999,7 @@ asset:furniture/level01/interactiveelectricguitar/interactiveelectricguitar?dl=b
 asset:definitions/mascots/rockhopper?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/mascot.sa.unity3d&p=game/adventure/assetbundles
 asset:tasks/divingthroneroom/watchers.manifest?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/rookie/boardwalkrubberduck.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
+asset:furniture/events/penguincup2018/penguincup2018/penguincup2018_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:quests/djc001q002stars/zones/mtblizzard/triggers/triggerwalkcollectstar01?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/djcadence/c01q02.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/rkc001q001drop/zones/mtblizzard/triggers/triggerclimbdownmtblizz?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/rookie/c01q01.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/quests/djcadence/djc001q003meeting.complete.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest.sa.unity3d&p=game/adventure/assetbundles
@@ -15215,6 +15210,7 @@ asset:quests/aac002q002view/zones/beach/objects/bergbase/bergbase?dl=bundle:sa-b
 asset:definitions/tasks/auntarctic/rainbowcollect2drops.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:definitions/tasks/auntarctic/blizzardbeach50000.reward?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:decals/decal_incredibles?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:furniture/events/penguincup2018/penguincup2018/penguincup2018?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:ui/images/igloos_icon_edit?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
 asset:tasks/towntulips/watchers/watchergroup_towntulips?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/rhc001q008goodimpressions/audio/questaudio.rhc001q008goodimpressions?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/rockhopper/c01q08.sa.unity3d&p=game/adventure/assetbundles
@@ -15575,6 +15571,7 @@ asset:scenes/defaultigloo/materials/defaultigloolotground?dl=bundle:sa-bundle&x=
 asset:furniture/level02/jungleplant/jungleplant_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level02.sa.unity3d&p=modules/igloo/assetbundles
 asset:avatar/equipment/swimmers/swimmers_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:tasks/rainbowshop/watchers/watcheraction_rainbowshop?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
+asset:furniture/events/penguincup2018/bleachers/bleachers_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/event.sa.unity3d&p=modules/igloo/assetbundles
 asset:scenes/defaultigloo/prefabs/defaultigloonoplacementvolumes?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/igloo.sa.unity3d&p=modules/igloo/assetbundles
 asset:definitions/tasks/rockhopper/rdma2017_task1?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/tasks.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/rhc001q010captainsshare/zones/beach/cameras/rhc001q010penglantisruinsrailcameras?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/rockhopper/c01q10.sa.unity3d&p=game/adventure/assetbundles
@@ -16186,5 +16183,5 @@ bundle:assetbundles/generated/standalonewindows64/screentoyboxtubes.sa.unity3d?d
 bundle:assetbundles/generated/standalonewindows64/tasks.sa.unity3d?d=assetbundles/generated/standalonewindows64/mascot.sa.unity3d&p=0
 bundle:assetbundles/generated/standalonewindows64/ui/dailychallenges.sa.unity3d?d=&p=0
 baseuri:
-contentversion:41682a80d932d55c17ac5546fb04ed2f9134a491
+contentversion:877ef219dfa687090712a0502e93a9359c8b5e87
 contentmanifesthash:

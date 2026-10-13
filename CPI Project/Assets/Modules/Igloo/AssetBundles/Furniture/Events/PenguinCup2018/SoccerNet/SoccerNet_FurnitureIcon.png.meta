@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ea5a92e5189ea5149b366aacd8789b3d
+guid: b72b68b277cf031459341b2df1c07cde
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -191,5 +191,5 @@ TextureImporter:
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
-  assetBundleName: 
+  assetBundleName: igloo/event.sa.unity3d.txt
   assetBundleVariant: 
