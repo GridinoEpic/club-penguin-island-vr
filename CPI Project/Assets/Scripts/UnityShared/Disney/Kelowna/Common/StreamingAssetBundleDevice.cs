@@ -201,7 +201,8 @@ namespace Disney.Kelowna.Common
 		public StreamingAssetBundleDevice(DeviceManager deviceManager)
 			: base(deviceManager)
 		{
-            streamingAssetsPath = "file://" + Application.dataPath + "/raw";
+            // iOS app bundles are case-sensitive; StreamingAssets lives at Data/Raw.
+            streamingAssetsPath = "file://" + Application.streamingAssetsPath;
             Debug.Log(streamingAssetsPath);
 		}
 
