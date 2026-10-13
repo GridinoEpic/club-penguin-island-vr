@@ -41,6 +41,8 @@ namespace ClubPenguin.Halloween
 
 		public ScheduledEventDateDefinitionKey DateDefinitionKey;
 
+		public ScheduledEventDateDefinitionKey[] AdditionalDateDefinitionKeys;
+
 		public int UpdateIntervalMinutes;
 
 		[Tooltip("Range to randomize updates, will be between -value and value")]
@@ -72,6 +74,8 @@ namespace ClubPenguin.Halloween
 
 		private ScheduledEventDateDefinition DateDefinition;
 
+		private List<ScheduledEventDateDefinition> additionalDateDefinitions;
+
 		private INetworkServicesManager network;
 
 		private Localizer localizer;
@@ -84,7 +88,25 @@ namespace ClubPenguin.Halloween
 		{
 			network = Service.Get<INetworkServicesManager>();
 			localizer = Service.Get<Localizer>();
-			DateDefinition = Service.Get<IGameData>().Get<Dictionary<int, ScheduledEventDateDefinition>>()[DateDefinitionKey.Id];
+			Dictionary<int, ScheduledEventDateDefinition> dateDefinitions = Service.Get<IGameData>().Get<Dictionary<int, ScheduledEventDateDefinition>>();
+			if (dateDefinitions == null || !dateDefinitions.TryGetValue(DateDefinitionKey.Id, out DateDefinition))
+			{
+				Debug.LogError("ProgressOverTime could not find a scheduled event date definition with ID " + DateDefinitionKey.Id + ".", this);
+				enabled = false;
+				return;
+			}
+			additionalDateDefinitions = new List<ScheduledEventDateDefinition>();
+			for (int i = 0; AdditionalDateDefinitionKeys != null && i < AdditionalDateDefinitionKeys.Length; i++)
+			{
+				ScheduledEventDateDefinitionKey key = AdditionalDateDefinitionKeys[i];
+				if (!dateDefinitions.TryGetValue(key.Id, out ScheduledEventDateDefinition additionalDateDefinition))
+				{
+					Debug.LogError("ProgressOverTime could not find an additional scheduled event date definition with ID " + key.Id + ".", this);
+					enabled = false;
+					return;
+				}
+				additionalDateDefinitions.Add(additionalDateDefinition);
+			}
 			if (UsePersonalCfcDonations)
 			{
 				registerDonationProgressBar();
@@ -100,7 +122,16 @@ namespace ClubPenguin.Halloween
 
 		private void CheckWithinDateRange()
 		{
-			if (Service.Get<ContentSchedulerService>().IsDuringScheduleEventDates(DateDefinition))
+			ContentSchedulerService contentSchedulerService = Service.Get<ContentSchedulerService>();
+			bool isDuringScheduleEventDates = contentSchedulerService.IsDuringScheduleEventDates(DateDefinition);
+			bool isAfterScheduleEventDates = contentSchedulerService.IsAfterScheduleEventDates(DateDefinition);
+			for (int i = 0; i < additionalDateDefinitions.Count; i++)
+			{
+				ScheduledEventDateDefinition dateDefinition = additionalDateDefinitions[i];
+				isDuringScheduleEventDates |= contentSchedulerService.IsDuringScheduleEventDates(dateDefinition);
+				isAfterScheduleEventDates &= contentSchedulerService.IsAfterScheduleEventDates(dateDefinition);
+			}
+			if (isDuringScheduleEventDates)
 			{
 				if (ProgressText != null)
 				{
@@ -133,7 +164,7 @@ namespace ClubPenguin.Halloween
 					updateProgress();
 				}
 			}
-			else if (Service.Get<ContentSchedulerService>().IsAfterScheduleEventDates(DateDefinition))
+			else if (isAfterScheduleEventDates)
 			{
 				if (ProgressText != null)
 				{
