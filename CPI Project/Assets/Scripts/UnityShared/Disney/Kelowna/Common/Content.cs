@@ -226,6 +226,41 @@ namespace Disney.Kelowna.Common
 			return false;
 		}
 
+		internal static bool RetainAddressableAsset(string key)
+		{
+			Content content = Service.Get<Content>();
+			ContentManifest.AssetEntry entry = content.getAssetEntry(key.ToLowerInvariant());
+			if (isAddressableEntry(entry))
+			{
+				content.bundleManager.RetainAddressable(entry.Key);
+				return true;
+			}
+			return false;
+		}
+
+		internal static bool ReleaseAddressableAsset(string key)
+		{
+			Content content = Service.Get<Content>();
+			ContentManifest.AssetEntry entry = content.getAssetEntry(key.ToLowerInvariant());
+			if (!isAddressableEntry(entry))
+			{
+				return false;
+			}
+			content.bundleManager.ReleaseAddressableReference(entry.Key);
+			return true;
+		}
+
+		private static bool isAddressableEntry(ContentManifest.AssetEntry entry)
+		{
+			string deviceType = entry.DeviceList;
+			int separator = deviceType.IndexOf(':');
+			if (separator >= 0)
+			{
+				deviceType = deviceType.Substring(0, separator);
+			}
+			return string.Equals(deviceType, BundleDevice.DEVICE_TYPE, StringComparison.OrdinalIgnoreCase);
+		}
+
 		public static bool ContainsKey(AssetContentKey key, params string[] args)
 		{
 			string key2 = key.Expand(args);
@@ -446,7 +481,10 @@ namespace Disney.Kelowna.Common
 			TAsset indexedAsset = getIndexedAsset<TAsset>(key);
 			if (indexedAsset != null)
 			{
-				bundleManager.ReleaseAddressable(assetEntry.Key);
+				if (!bundleManager.ReleaseAddressable(assetEntry.Key))
+				{
+					return false;
+				}
 				assetIndex.Remove(assetEntry.Key);
 				return true;
 			}

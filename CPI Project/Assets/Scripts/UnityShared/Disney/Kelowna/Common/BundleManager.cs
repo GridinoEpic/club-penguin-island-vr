@@ -23,6 +23,8 @@ namespace Disney.Kelowna.Common
 
 		private readonly Dictionary<string, CachedAddressable> addressableAssets = new Dictionary<string, CachedAddressable>();
 
+		private readonly Dictionary<string, int> addressableReferenceCounts = new Dictionary<string, int>();
+
 		private readonly HashSet<string> pinnedAddressableBundles = new HashSet<string>();
 
 		public int UnmountFrameCount = 250;
@@ -56,6 +58,7 @@ namespace Disney.Kelowna.Common
 				}
 			}
 			addressableAssets.Clear();
+			addressableReferenceCounts.Clear();
 		}
 
 		public AsyncOperationHandle<TAsset> LoadAddressableAsync<TAsset>(string assetKey, string bundleKey, string address) where TAsset : class
@@ -99,8 +102,46 @@ namespace Disney.Kelowna.Common
 #endif
 		}
 
-		public void ReleaseAddressable(string assetKey)
+		public void RetainAddressable(string assetKey)
 		{
+			int referenceCount;
+			addressableReferenceCounts.TryGetValue(assetKey, out referenceCount);
+			addressableReferenceCounts[assetKey] = referenceCount + 1;
+			CachedAddressable cachedAddressable;
+			if (addressableAssets.TryGetValue(assetKey, out cachedAddressable))
+			{
+				cachedAddressable.LastLoadFrame = Time.frameCount;
+			}
+		}
+
+		public void ReleaseAddressableReference(string assetKey)
+		{
+			int referenceCount;
+			if (!addressableReferenceCounts.TryGetValue(assetKey, out referenceCount))
+			{
+				return;
+			}
+			if (referenceCount <= 1)
+			{
+				addressableReferenceCounts.Remove(assetKey);
+				CachedAddressable cachedAddressable;
+				if (addressableAssets.TryGetValue(assetKey, out cachedAddressable))
+				{
+					cachedAddressable.LastLoadFrame = Time.frameCount;
+				}
+			}
+			else
+			{
+				addressableReferenceCounts[assetKey] = referenceCount - 1;
+			}
+		}
+
+		public bool ReleaseAddressable(string assetKey)
+		{
+			if (addressableReferenceCounts.ContainsKey(assetKey))
+			{
+				return false;
+			}
 			CachedAddressable cachedAddressable;
 			if (addressableAssets.TryGetValue(assetKey, out cachedAddressable))
 			{
@@ -110,6 +151,7 @@ namespace Disney.Kelowna.Common
 				}
 				addressableAssets.Remove(assetKey);
 			}
+			return true;
 		}
 
 		public void SetAddressableBundlePinned(string bundleKey, bool isPinned)
@@ -325,7 +367,9 @@ namespace Disney.Kelowna.Common
 			foreach (KeyValuePair<string, CachedAddressable> addressableAsset in addressableAssets)
 			{
 				CachedAddressable cachedAddressable = addressableAsset.Value;
-				if (!pinnedAddressableBundles.Contains(cachedAddressable.BundleKey) && Time.frameCount - cachedAddressable.LastLoadFrame >= UnmountFrameCount)
+				if (!addressableReferenceCounts.ContainsKey(addressableAsset.Key) &&
+					!pinnedAddressableBundles.Contains(cachedAddressable.BundleKey) &&
+					Time.frameCount - cachedAddressable.LastLoadFrame >= UnmountFrameCount)
 				{
 					addressablesToRelease.Add(addressableAsset.Key);
 				}
