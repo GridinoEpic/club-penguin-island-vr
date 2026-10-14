@@ -23,6 +23,7 @@ public static class CreateAssetBundles
         ModifyTextFile(platform);
 
         AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+        ClearCdnAssetBundleNames();
         ConvertLegacyBundleAssignments(settings);
         ConfigureLocalGroups(settings, new List<AddressableAssetGroup>(settings.groups), platform);
         AssetDatabase.SaveAssets();
@@ -40,6 +41,27 @@ public static class CreateAssetBundles
         CleanupPlatformBundles(outputDirectory, platform);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    private static void ClearCdnAssetBundleNames()
+    {
+        foreach (string bundleName in AssetDatabase.GetAllAssetBundleNames())
+        {
+            if (!bundleName.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            foreach (string assetPath in AssetDatabase.GetAssetPathsFromAssetBundle(bundleName))
+            {
+                AssetImporter importer = AssetImporter.GetAtPath(assetPath);
+                if (importer != null)
+                {
+                    importer.assetBundleName = string.Empty;
+                    AssetDatabase.WriteImportSettingsIfDirty(assetPath);
+                }
+            }
+        }
     }
 
     private static int GetLegacyBundleBuilderIndex(AddressableAssetSettings settings)
@@ -100,6 +122,27 @@ public static class CreateAssetBundles
             }
         }
         MergeGroupsWithMatchingBundleLabels(settings);
+        RemoveEmptyLegacyGroups(settings);
+    }
+
+    private static void RemoveEmptyLegacyGroups(AddressableAssetSettings settings)
+    {
+        List<AddressableAssetGroup> emptyLegacyGroups = new List<AddressableAssetGroup>();
+        foreach (AddressableAssetGroup group in settings.groups)
+        {
+            if (group != null &&
+                !group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase) &&
+                group.Name.IndexOf(".sa.unity3d.txt", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                group.entries.Count == 0)
+            {
+                emptyLegacyGroups.Add(group);
+            }
+        }
+
+        foreach (AddressableAssetGroup group in emptyLegacyGroups)
+        {
+            settings.RemoveGroup(group);
+        }
     }
 
     private static void MergeGroupsWithMatchingBundleLabels(AddressableAssetSettings settings)
