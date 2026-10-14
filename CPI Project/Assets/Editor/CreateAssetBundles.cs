@@ -131,7 +131,7 @@ public static class CreateAssetBundles
         foreach (AddressableAssetGroup group in settings.groups)
         {
             if (group != null &&
-                !group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase) &&
+                !IsCdnGroup(group) &&
                 group.Name.IndexOf(".sa.unity3d.txt", StringComparison.OrdinalIgnoreCase) >= 0 &&
                 group.entries.Count == 0)
             {
@@ -151,7 +151,7 @@ public static class CreateAssetBundles
         List<AddressableAssetGroup> groupsToRemove = new List<AddressableAssetGroup>();
         foreach (AddressableAssetGroup group in settings.groups)
         {
-            if (group == null || group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase))
+            if (group == null || IsCdnGroup(group))
             {
                 continue;
             }
@@ -205,6 +205,12 @@ public static class CreateAssetBundles
         return null;
     }
 
+    private static bool IsCdnGroup(AddressableAssetGroup group)
+    {
+        return group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase) ||
+               group.Name.StartsWith("CDN-", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void ConfigureLocalGroups(AddressableAssetSettings settings, List<AddressableAssetGroup> groups, string platform)
     {
         string buildPath = Path.Combine(Application.dataPath, "StreamingAssets", "assetbundles", "generated", platform);
@@ -214,7 +220,7 @@ public static class CreateAssetBundles
             : BundledAssetGroupSchema.BundleCompressionMode.LZMA;
         foreach (AddressableAssetGroup group in groups)
         {
-            if (group == null || group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase))
+            if (group == null || IsCdnGroup(group))
             {
                 continue;
             }
