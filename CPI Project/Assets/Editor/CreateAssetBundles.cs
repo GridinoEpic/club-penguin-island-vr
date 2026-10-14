@@ -166,6 +166,9 @@ public static class CreateAssetBundles
     {
         string buildPath = Path.Combine(Application.dataPath, "StreamingAssets", "assetbundles", "generated", platform);
         string loadPath = "{UnityEngine.Application.streamingAssetsPath}/assetbundles/generated/" + platform;
+        BundledAssetGroupSchema.BundleCompressionMode compression = platform == "webgl"
+            ? BundledAssetGroupSchema.BundleCompressionMode.LZ4
+            : BundledAssetGroupSchema.BundleCompressionMode.LZMA;
         foreach (AddressableAssetGroup group in groups)
         {
             if (group == null || group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase))
@@ -177,6 +180,7 @@ public static class CreateAssetBundles
             {
                 continue;
             }
+            schema.Compression = compression;
             schema.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
             schema.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
         }
