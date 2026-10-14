@@ -134,7 +134,6 @@ namespace Disney.Kelowna.Common
 		{
 			deviceManager.Mount(new ResourceDevice(deviceManager));
 			deviceManager.Mount(new BundleDevice(deviceManager, bundleManager));
-			deviceManager.Mount(new StreamingAssetBundleDevice(deviceManager));
 			deviceManager.Mount(new AssetDatabaseDevice(deviceManager));
 			wwwBundleDevice = new WwwBundleDevice(deviceManager, baseUri);
 			deviceManager.Mount(wwwBundleDevice);
@@ -264,13 +263,8 @@ namespace Disney.Kelowna.Common
 			ContentManifest.AssetEntry assetEntry = content.getAssetEntry(assetKey.ToLower());
 			if (!string.IsNullOrEmpty(assetEntry.BundleKey))
 			{
-				BundleMount mount;
-				if (content.bundleManager.TryGetBundle(assetEntry.BundleKey, out mount))
-				{
-					mount.IsPinned = isPinned;
-					return true;
-				}
-				Log.LogErrorFormatted(typeof(Content), "Tried to {2} bundle '{0}' for key '{1}', but bundle was not mounted in BundleManager", assetEntry.BundleKey, assetKey, isPinned ? "pin" : "unpin");
+				content.bundleManager.SetAddressableBundlePinned(assetEntry.BundleKey, isPinned);
+				return true;
 			}
 			return false;
 		}
@@ -452,11 +446,7 @@ namespace Disney.Kelowna.Common
 			TAsset indexedAsset = getIndexedAsset<TAsset>(key);
 			if (indexedAsset != null)
 			{
-				string bundleKey = assetEntry.BundleKey;
-				if (!string.IsNullOrEmpty(bundleKey) && bundleManager.IsMounted(assetEntry.BundleKey))
-				{
-					bundleManager.UnmountBundle(bundleKey, unloadAllObjects);
-				}
+				bundleManager.ReleaseAddressable(assetEntry.Key);
 				assetIndex.Remove(assetEntry.Key);
 				return true;
 			}
