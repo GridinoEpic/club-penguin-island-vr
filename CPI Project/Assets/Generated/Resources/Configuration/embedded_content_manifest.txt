@@ -9543,10 +9543,16 @@ asset:globalassets/materials/eventpiratepartycubemap?dl=res&x=tga
 asset:globalassets/materials/eventpiratepartyskybox?dl=res&x=mat
 asset:globalassets/materials/mazelightmapstatic?dl=res&x=mat
 asset:globalassets/materials/rockmossnodepth?dl=res&x=mat
+asset:globalassets/materials/speakerslightmap?dl=res&x=mat
 asset:globalassets/materials/whitetexturerottedmaterial?dl=res&x=mat
 asset:globalassets/materials/whitetexturerottedtexture?dl=res&x=tga
 asset:globalassets/materials/woodroperottedmaterial?dl=res&x=mat
 asset:globalassets/materials/woodroperottedtexture?dl=res&x=png
+asset:globalassets/prizeruins/animations/piratepartyprizeruinsanimatorcontroller?dl=res&x=controller
+asset:globalassets/prizeruins/animations/piratepartyprizeruinsbelowwater?dl=res&x=anim
+asset:globalassets/prizeruins/animations/piratepartyprizeruinsdefault?dl=res&x=anim
+asset:globalassets/prizeruins/animations/piratepartyprizeruinsraisingup?dl=res&x=anim
+asset:globalassets/prizeruins/piratepartyprizeruins?dl=res&x=prefab
 asset:scenes/eventpirateparty/lightingdata?dl=res&x=asset
 asset:scenes/eventpirateparty/lightmap-0_comp_light?dl=res&x=exr
 asset:scenes/eventpirateparty/lightmap-1_comp_light?dl=res&x=exr
@@ -16183,5 +16189,5 @@ bundle:assetbundles/generated/standalonewindows64/screentoyboxtubes.sa.unity3d?d
 bundle:assetbundles/generated/standalonewindows64/tasks.sa.unity3d?d=assetbundles/generated/standalonewindows64/mascot.sa.unity3d&p=0
 bundle:assetbundles/generated/standalonewindows64/ui/dailychallenges.sa.unity3d?d=&p=0
 baseuri:
-contentversion:877ef219dfa687090712a0502e93a9359c8b5e87
+contentversion:303f3bfbbcb2e3ff3d60b728d5fc95c4b074335d
 contentmanifesthash:
