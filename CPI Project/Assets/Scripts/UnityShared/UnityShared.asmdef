@@ -8,6 +8,8 @@
         "MixSDK",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
         "iTween",
         "SmartFox2X"
     ],

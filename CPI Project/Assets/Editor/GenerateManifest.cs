@@ -6,6 +6,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Application = UnityEngine.Application;
 
@@ -185,155 +187,89 @@ public class GenerateManifest
                     assetLines.Add(forcedMissingResource);
                 }
 
-                // Process Bundle assets
-                string[] allPaths = AssetDatabase.GetAllAssetPaths();
-                var bundleAssets = allPaths
-                    .Where(p => !AssetDatabase.IsValidFolder(p))
-                    .Where(p =>
-                    {
-                        var imp = AssetImporter.GetAtPath(p);
-                        return imp != null && !string.IsNullOrEmpty(imp.assetBundleName) && !imp.assetBundleName.StartsWith("cdn/");
-                    })
-                    .ToArray();
-
-                for (int i = 0; i < bundleAssets.Length; i++)
+                AddressableAssetSettings addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                if (addressableSettings == null)
                 {
-                    string assetPath = bundleAssets[i];
-                    EditorUtility.DisplayProgressBar("Generating Manifest", $"Processing bundle assets {i + 1}/{bundleAssets.Length}", (float)(i + 1) / bundleAssets.Length);
-
-                    var importer = AssetImporter.GetAtPath(assetPath);
-                    if (importer == null) continue;
-
-                    string bundleLabel = importer.assetBundleName;
-                    string bundleVariant = importer.assetBundleVariant;
-
-                    // Remove .txt from bundle labels
-                    if (bundleLabel.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                        bundleLabel = bundleLabel.Substring(0, bundleLabel.Length - 4);
-
-                    if (!string.IsNullOrEmpty(bundleVariant) && bundleVariant.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                        bundleVariant = bundleVariant.Substring(0, bundleVariant.Length - 4);
-
-                    string bundleFileName = string.IsNullOrEmpty(bundleVariant) ? bundleLabel : $"{bundleLabel}.{bundleVariant}";
-
-                    // Look for generated bundle files in StreamingAssets
-                    string bundlesRoot = Path.Combine(Application.dataPath, "StreamingAssets/assetbundles/generated", platformFolder).Replace("\\", "/");
-                    string foundBundlePath = null;
-                    if (Directory.Exists(bundlesRoot))
+                    throw new InvalidOperationException("Addressables settings were not found.");
+                }
+                foreach (AddressableAssetGroup group in addressableSettings.groups)
+                {
+                    if (group == null ||
+                        group.Name.StartsWith("CDN/", StringComparison.OrdinalIgnoreCase) ||
+                        group.Name.IndexOf(".sa.unity3d.txt", StringComparison.OrdinalIgnoreCase) < 0)
                     {
-                        var allFiles = Directory.GetFiles(bundlesRoot, "*.*", SearchOption.AllDirectories);
-                        foreach (var f in allFiles)
+                        continue;
+                    }
+
+                    string groupBundlePath = GetLegacyBundlePath(group.Name, platformFolder);
+                    foreach (AddressableAssetEntry entry in group.entries)
+                    {
+                        string bundlePath = GetLegacyBundlePath(entry, platformFolder);
+                        if (!string.IsNullOrEmpty(bundlePath))
                         {
-                            string fNorm = f.Replace("\\", "/");
-
-                            // Remove .txt from filename for matching
-                            string fNormNoTxt = fNorm;
-                            if (fNormNoTxt.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                                fNormNoTxt = fNormNoTxt.Substring(0, fNormNoTxt.Length - 4);
-
-                            if (fNormNoTxt.EndsWith(bundleFileName, StringComparison.OrdinalIgnoreCase))
-                            {
-                                int idx = fNorm.IndexOf("assetbundles/");
-                                if (idx >= 0)
-                                {
-                                    foundBundlePath = fNorm.Substring(idx).Replace("\\", "/").ToLower();
-
-                                    // Remove .txt from found path
-                                    if (foundBundlePath.EndsWith(".txt"))
-                                        foundBundlePath = foundBundlePath.Substring(0, foundBundlePath.Length - 4);
-
-                                    break;
-                                }
-                            }
+                            groupBundlePath = bundlePath;
+                            break;
                         }
                     }
 
-                    string fallbackBundlePath = $"assetbundles/generated/{platformFolder}/{bundleFileName}".ToLower();
-                    if (fallbackBundlePath.EndsWith(".txt"))
-                        fallbackBundlePath = fallbackBundlePath.Substring(0, fallbackBundlePath.Length - 4);
-
-                    string bundlePathForManifest = foundBundlePath ?? fallbackBundlePath;
-
-                    // Correct assetPart: relative path after AssetBundles folder
-                    string relAsset = assetPath.Replace("\\", "/");
-
-                    string[] folders = relAsset.Split('/');
-                    int idxAssetBundles = Array.FindIndex(folders, f => string.Equals(f, "AssetBundles", StringComparison.OrdinalIgnoreCase));
-                    string assetPart = idxAssetBundles >= 0
-                        ? string.Join("/", folders.Skip(idxAssetBundles + 1))
-                        : Path.GetFileNameWithoutExtension(relAsset);
-
-                    assetPart = Path.Combine(Path.GetDirectoryName(assetPart) ?? "", Path.GetFileNameWithoutExtension(assetPart))
-                        .Replace("\\", "/").ToLower();
-
-                    // Detect original asset extension for x=
-                    string extForX = Path.GetExtension(assetPath).TrimStart('.').ToLower();
-                    if (string.IsNullOrEmpty(extForX)) extForX = "";
-
-
-                    //relAsset Assets/Game/UI/Exchange/AssetBundles/
-                    //assetPart Images/Exchange_Collectible_WindChimes.
-                    //extForX png
-                    string pFolder = relAsset.ToLower().Remove(0, 7).Replace("/" + assetPart + "." + extForX, "");
-
-                    // Generate manifest line for bundles with proper x= and d=
-                    string dValue = "";
-                    string lookupKey = (bundlePathForManifest ?? "").Replace("\\", "/").ToLower();
-                    if (bundleDependencies.ContainsKey(lookupKey))
-                        dValue = bundleDependencies[lookupKey];
-
-                    string assetLine = $"asset:{assetPart}?dl=bundle:sa-bundle&x={extForX}&b={bundlePathForManifest}&p={pFolder}";
-
-                    if (!writtenLines.Contains(assetLine))
+                    HashSet<string> bundlePaths = new HashSet<string>();
+                    int groupAssetCount = 0;
+                    foreach (AddressableAssetEntry entry in group.entries)
                     {
-                        writtenLines.Add(assetLine);
-                        writer.WriteLine(assetLine);
+                        string entryAssetPath = entry.AssetPath;
+                        if (string.IsNullOrEmpty(entryAssetPath) || AssetDatabase.IsValidFolder(entryAssetPath))
+                        {
+                            continue;
+                        }
+                        if (!entryAssetPath.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new InvalidOperationException("Addressable asset path is outside the Assets folder: " + entryAssetPath);
+                        }
+
+                        string assetPath = entryAssetPath.Replace("\\", "/");
+                        string assetPart = GetAssetPart(assetPath);
+
+                        string extForX = Path.GetExtension(assetPath).TrimStart('.').ToLowerInvariant();
+                        string pFolder = assetPath.Substring("Assets/".Length).ToLowerInvariant()
+                            .Replace("/" + assetPart + "." + extForX, "");
+                        string bundlePathForManifest = GetLegacyBundlePath(entry, platformFolder);
+                        if (string.IsNullOrEmpty(bundlePathForManifest))
+                        {
+                            bundlePathForManifest = groupBundlePath;
+                        }
+                        bundlePaths.Add(bundlePathForManifest);
+                        string assetLine = $"asset:{assetPart}?dl=bundle:sa-bundle&x={extForX}&b={bundlePathForManifest}&p={pFolder}";
+                        groupAssetCount++;
+
+                        if (writtenLines.Add(assetLine))
+                        {
+                            writer.WriteLine(assetLine);
+                        }
+                    }
+
+                    if (groupAssetCount > 0)
+                    {
+                        foreach (string bundlePathForManifest in bundlePaths)
+                        {
+                            string dValue = bundleDependencies.TryGetValue(bundlePathForManifest, out string dependencies) ? dependencies : "";
+                            string bundleLine = $"bundle:{bundlePathForManifest}?d={dValue}&p=0";
+                            if (writtenLines.Add(bundleLine))
+                            {
+                                writer.WriteLine(bundleLine);
+                            }
+                        }
                     }
                 }
 
                 EditorUtility.ClearProgressBar();
-
-                // Write all bundle files for reference
-                string bundlesRootDir = Path.Combine(Application.dataPath, "StreamingAssets/assetbundles/generated", platformFolder).Replace("\\", "/");
-                if (Directory.Exists(bundlesRootDir))
-                {
-                    var bundleFiles = Directory.GetFiles(bundlesRootDir, "*.*", SearchOption.AllDirectories)
-                        .Where(f => !f.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
-                        .Select(f => f.Replace("\\", "/").ToLower())
-                        .ToArray();
-
-                    Array.Sort(bundleFiles, StringComparer.Ordinal);
-
-                    foreach (var f in bundleFiles)
-                    {
-                        // Remove .txt
-                        string cleanPath = f;
-                        if (cleanPath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                            cleanPath = cleanPath.Substring(0, cleanPath.Length - 4);
-
-                        int idx = cleanPath.IndexOf("assetbundles/");
-                        if (idx == -1) continue;
-
-                        string clean = cleanPath.Substring(idx);
-
-                        string dValue = "";
-                        string lookupKey = (clean ?? "").Replace("\\", "/").ToLower();
-                        if (bundleDependencies.ContainsKey(lookupKey))
-                            dValue = bundleDependencies[lookupKey];
-
-                        string line = $"bundle:{clean}?d={dValue}&p=0";
-                        if (!writtenLines.Contains(line))
-                        {
-                            writtenLines.Add(line);
-                            writer.WriteLine(line);
-                        }
-                    }
-                }
-
-                writer.WriteLine("baseuri:");
-                writer.WriteLine($"contentversion:{hash}");
-                writer.WriteLine("contentmanifesthash:");
             }
+
+            File.AppendAllLines(manifestFilePath, new[]
+            {
+                "baseuri:",
+                $"contentversion:{hash}",
+                "contentmanifesthash:"
+            });
 
             EditorUtility.ClearProgressBar();
             Debug.Log("Manifest generated: " + manifestFilePath);
@@ -355,6 +291,39 @@ public class GenerateManifest
             EditorUtility.ClearProgressBar();
             Debug.LogError("Error generating manifest file: " + e.Message);
         }
+    }
+
+    private static string GetAssetPart(string assetPath)
+    {
+        string[] folders = assetPath.Replace("\\", "/").Split('/');
+        int assetBundlesIndex = Array.FindIndex(folders, folder => string.Equals(folder, "AssetBundles", StringComparison.OrdinalIgnoreCase));
+        string assetPart = assetBundlesIndex >= 0
+            ? string.Join("/", folders.Skip(assetBundlesIndex + 1))
+            : Path.GetFileName(assetPath);
+        return Path.Combine(Path.GetDirectoryName(assetPart) ?? "", Path.GetFileNameWithoutExtension(assetPart))
+            .Replace("\\", "/").ToLowerInvariant();
+    }
+
+    private static string GetLegacyBundlePath(AddressableAssetEntry entry, string platformFolder)
+    {
+        foreach (string label in entry.labels)
+        {
+            if (label.EndsWith(".sa.unity3d.txt", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"assetbundles/generated/{platformFolder}/{label.Substring(0, label.Length - ".txt".Length)}".ToLowerInvariant();
+            }
+        }
+        return null;
+    }
+
+    private static string GetLegacyBundlePath(string groupName, string platformFolder)
+    {
+        string bundleFileName = groupName;
+        if (bundleFileName.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+        {
+            bundleFileName = bundleFileName.Substring(0, bundleFileName.Length - ".txt".Length);
+        }
+        return $"assetbundles/generated/{platformFolder}/{bundleFileName}".ToLowerInvariant();
     }
 
     private static string GetRelativePathInResources(string assetPath)
