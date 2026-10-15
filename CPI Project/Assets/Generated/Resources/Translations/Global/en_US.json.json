@@ -9323,5 +9323,9 @@
   "Settings.Controls.Debug": "Debug Menu",
   "Settings.Controls.All": "All Controls",
   "Settings.Controls.Look": "Look Around",
-  "Settings.Controls.Controller": "Controller"
+  "Settings.Controls.Controller": "Controller",
+  "ChatPhraseDefinition_DotsShop_1": "Put that thing back where it came from or so help me!",
+  "ChatPhraseDefinition_DotsShop_2": "Just keep swimming.",
+  "ChatPhraseDefinition_DotsShop_3": "To infinity and beyond!",
+  "ChatPhraseDefinition_DotsShop_4": "The Claw!"
 }
