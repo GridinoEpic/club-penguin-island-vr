@@ -17,6 +17,6 @@ MonoBehaviour:
   TargetFrameRate: -1
   FixedDeltaTime: 0
   SceneAudioContentKey:
-    Key: 
+    Key: Audio/DotsShop/Audio.DotsShop
     type: UnityEngine.GameObject, UnityEngine.CoreModule
   AdditiveSceneOverrides: []

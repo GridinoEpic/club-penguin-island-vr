@@ -1331,6 +1331,7 @@ asset:audio/boxdimension/audio.boxdimension?dl=res&x=prefab
 asset:audio/clothingdesigner/audio.clothingdesigner?dl=res&x=prefab
 asset:audio/default/audio.default?dl=res&x=prefab
 asset:audio/diving/audio.diving?dl=res&x=prefab
+asset:audio/dotsshop/audio.dotsshop?dl=res&x=prefab
 asset:audio/games/audio.game.blockandlock?dl=res&x=prefab
 asset:audio/games/audio.game.fossilfour?dl=res&x=prefab
 asset:audio/games/audio.game.inkorswim?dl=res&x=prefab
@@ -16190,5 +16191,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:57ed70dc6cfa7c5db1726425e02cd9bcbe7a4a55
+contentversion:a726c95bdf1d5eb62c57c812f14d992b5a19edc7
 contentmanifesthash:
