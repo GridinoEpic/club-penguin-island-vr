@@ -9327,5 +9327,6 @@
   "ChatPhraseDefinition_DotsShop_1": "Put that thing back where it came from or so help me!",
   "ChatPhraseDefinition_DotsShop_2": "Just keep swimming.",
   "ChatPhraseDefinition_DotsShop_3": "To infinity and beyond!",
-  "ChatPhraseDefinition_DotsShop_4": "The Claw!"
+  "ChatPhraseDefinition_DotsShop_4": "The Claw!",
+  "GlobalUI.Zone.DotsShop.Title": "The Disney Store"
 }
