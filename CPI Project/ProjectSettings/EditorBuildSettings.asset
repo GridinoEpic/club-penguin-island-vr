@@ -329,6 +329,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/World/Scenes/Events/CarWorldDecorations/AdditiveScenes/CarWorld_Decorations_MtBlizzard.unity
     guid: dd89f665c6134434b891af516c6fc668
+  - enabled: 1
+    path: Assets/Game/World/Scenes/DotsShop.unity
+    guid: 37998f67e33bf944dbaedee9272afba9
   m_configObjects:
     com.unity.adaptiveperformance.google.android.provider_settings: {fileID: 11400000,
       guid: c9b3af1d04a8cb448924e2b2f6925152, type: 2}
