@@ -1057,7 +1057,7 @@ GameObject:
   - component: {fileID: 1336447624958003480}
   - component: {fileID: 3015393827225033355}
   - component: {fileID: 6627512991653356573}
-  m_Layer: 30
+  m_Layer: 29
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1539,7 +1539,7 @@ GameObject:
   - component: {fileID: 3998238825780622913}
   - component: {fileID: 4547781289983543629}
   - component: {fileID: 2469101653761609448}
-  m_Layer: 30
+  m_Layer: 29
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2406,7 +2406,7 @@ GameObject:
   - component: {fileID: 4513403080231278010}
   - component: {fileID: 3457258522041400911}
   - component: {fileID: 6832936950943683217}
-  m_Layer: 30
+  m_Layer: 29
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
