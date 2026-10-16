@@ -1,5 +1,4 @@
-using ClubPenguin.Avatar;
-using ClubPenguin.ClothingDesigner.Inventory;
+using ClubPenguin.ClothingDesigner;
 using ClubPenguin.Core;
 using ClubPenguin.Net;
 using ClubPenguin.Net.Domain;
@@ -19,18 +18,6 @@ namespace ClubPenguin
         private ChatActivityData chatActivityData;
 
         private EventDispatcher dispatcher;
-
-        private bool isCreatingAllEquipment;
-
-        private bool equipmentCreationInProgress;
-
-        private bool equipmentCreationComplete;
-
-        private bool equipmentCreationFailed;
-
-        private bool equipmentCreationNotifyChat;
-
-        private DCustomEquipment equipmentBeingCreated;
 
         private const string ERROR_TEXT = "Error! That ID does not exist.";
         private const string GRANTED_TUBE = "Granted Tube.";
@@ -214,12 +201,6 @@ namespace ClubPenguin
 
         private void addEquipmentToInventory(int definitionId, bool notifyChat)
         {
-            if (equipmentCreationInProgress)
-            {
-                reportGrantError(notifyChat, "An equipment creation is already in progress.");
-                return;
-            }
-
             Dictionary<int, TemplateDefinition> templates = Service.Get<GameData>().Get<Dictionary<int, TemplateDefinition>>();
             TemplateDefinition templateDef;
             if (templates == null || !templates.TryGetValue(definitionId, out templateDef) || templateDef == null)
@@ -228,7 +209,13 @@ namespace ClubPenguin
                 return;
             }
 
-            createEquipment(templateDef, notifyChat);
+            Reward reward = new Reward();
+            reward.Add(new EquipmentInstanceReward(templateDef.Id));
+            Service.Get<INetworkServicesManager>().RewardService.QA_SetReward(reward);
+            if (notifyChat)
+            {
+                postSystemChatGrantedEquipment();
+            }
         }
 
         public void AddAllEquipmentToInventory()
@@ -243,67 +230,33 @@ namespace ClubPenguin
 
         private void startAddingAllEquipment(bool notifyChat)
         {
-            if (equipmentCreationInProgress)
-            {
-                reportGrantError(notifyChat, "An equipment creation is already in progress.");
-                return;
-            }
-            StartCoroutine(addAllEquipmentToInventory(notifyChat));
-        }
-
-        private IEnumerator addAllEquipmentToInventory(bool notifyChat)
-        {
-            isCreatingAllEquipment = true;
             Dictionary<int, TemplateDefinition> templates = Service.Get<GameData>().Get<Dictionary<int, TemplateDefinition>>();
             if (templates == null || templates.Count == 0)
             {
-                isCreatingAllEquipment = false;
                 reportGrantError(notifyChat, "No templates are available.");
-                yield break;
+                return;
             }
 
+            Reward reward = new Reward();
             foreach (TemplateDefinition template in templates.Values)
             {
-                if (template == null)
+                if (template != null)
                 {
-                    continue;
-                }
-
-                equipmentCreationComplete = false;
-                equipmentCreationFailed = false;
-                createEquipment(template, notifyChat);
-                while (!equipmentCreationComplete && !equipmentCreationFailed)
-                {
-                    yield return null;
-                }
-                if (equipmentCreationFailed)
-                {
-                    isCreatingAllEquipment = false;
-                    yield break;
+                    reward.Add(new EquipmentInstanceReward(template.Id));
                 }
             }
-            isCreatingAllEquipment = false;
+
+            if (reward.isEmpty())
+            {
+                reportGrantError(notifyChat, "No templates are available.");
+                return;
+            }
+
+            Service.Get<INetworkServicesManager>().RewardService.QA_SetReward(reward);
             if (notifyChat)
             {
                 postSystemChatGrantedEquipment();
             }
-        }
-
-        private void createEquipment(TemplateDefinition templateDef, bool notifyChat)
-        {
-            DCustomEquipment equipment = default(DCustomEquipment);
-            equipment.DefinitionId = templateDef.Id;
-            equipment.Name = templateDef.AssetName;
-            equipment.Parts = new DCustomEquipmentPart[0];
-            equipment.DateTimeCreated = DateTime.UtcNow.Ticks;
-
-            equipmentBeingCreated = equipment;
-            equipmentCreationInProgress = true;
-            equipmentCreationNotifyChat = notifyChat;
-            CustomEquipment request = CustomEquipmentResponseAdaptor.ConvertCustomEquipmentToRequest(equipment);
-            dispatcher.AddListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
-            dispatcher.AddListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
-            Service.Get<INetworkServicesManager>().InventoryService.CreateCustomEquipment(request);
         }
 
         private void handleAddTube(string[] parts)
@@ -399,63 +352,6 @@ namespace ClubPenguin
             {
                 postSystemChatGrantedTube();
             }
-        }
-
-        private bool onEquipmentCreated(InventoryServiceEvents.EquipmentCreated evt)
-        {
-            dispatcher.RemoveListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
-            dispatcher.RemoveListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
-            equipmentCreationComplete = true;
-            equipmentCreationInProgress = false;
-
-            long equipmentId = evt.EquipmentId;
-
-            DataEntityHandle localPlayerHandle = dataEntityCollection.LocalPlayerHandle;
-
-            InventoryData inventoryData;
-            if (dataEntityCollection.TryGetComponent(localPlayerHandle, out inventoryData) && inventoryData != null)
-            {
-                DCustomEquipment createdEquipment = equipmentBeingCreated;
-                createdEquipment.Id = equipmentId;
-                createdEquipment.DateTimeCreated = DateTime.UtcNow.Ticks;
-
-                if (inventoryData.Inventory == null)
-                {
-                    inventoryData.Inventory = new Dictionary<long, InventoryIconModel<DCustomEquipment>>();
-                }
-                InventoryIconModel<DCustomEquipment> iconModel = new InventoryIconModel<DCustomEquipment>(equipmentId, createdEquipment, false, true);
-                if (!inventoryData.Inventory.ContainsKey(equipmentId))
-                {
-                    inventoryData.Inventory.Add(equipmentId, iconModel);
-                }
-            }
-            else
-            {
-                Debug.LogError("Unable to add created equipment: local player inventory data is unavailable.");
-            }
-
-            if (equipmentCreationNotifyChat && !isCreatingAllEquipment)
-            {
-                postSystemChatGrantedEquipment();
-            }
-            return false;
-        }
-
-        private bool onEquipmentCreationError(InventoryServiceErrors.EquipmentCreationError evt)
-        {
-            dispatcher.RemoveListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
-            dispatcher.RemoveListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
-            equipmentCreationFailed = true;
-            equipmentCreationInProgress = false;
-            if (equipmentCreationNotifyChat)
-            {
-                postSystemChatError();
-            }
-            else
-            {
-                Debug.LogError("Unable to create the requested equipment.");
-            }
-            return false;
         }
 
         private void reportGrantError(bool notifyChat, string message)
