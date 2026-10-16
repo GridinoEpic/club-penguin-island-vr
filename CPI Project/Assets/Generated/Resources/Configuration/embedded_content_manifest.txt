@@ -5938,7 +5938,6 @@ asset:definitions/equipment/templatedefinitions/template_243_flynnsgoatee?dl=res
 asset:definitions/equipment/templatedefinitions/template_244_cassandrasboots?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_245_flynnsboots?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_246_goldentressdress?dl=res&x=asset
-asset:definitions/equipment/templatedefinitions/template_247_travelingprincessdress?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_248_toqueaboutit?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_249_casqueade?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_250_bottomlessbackpack?dl=res&x=asset
@@ -16191,5 +16190,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:a726c95bdf1d5eb62c57c812f14d992b5a19edc7
+contentversion:ed88f9f5668f76caef073197ac46d8ac3c12fbfd
 contentmanifesthash:

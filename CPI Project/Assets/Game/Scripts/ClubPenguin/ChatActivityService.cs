@@ -20,6 +20,18 @@ namespace ClubPenguin
 
         private EventDispatcher dispatcher;
 
+        private bool isCreatingAllEquipment;
+
+        private bool equipmentCreationInProgress;
+
+        private bool equipmentCreationComplete;
+
+        private bool equipmentCreationFailed;
+
+        private bool equipmentCreationNotifyChat;
+
+        private DCustomEquipment equipmentBeingCreated;
+
         private const string ERROR_TEXT = "Error! That ID does not exist.";
         private const string GRANTED_TUBE = "Granted Tube.";
         private const string GRANTED_EQUIPMENT = "Granted Equipment.";
@@ -187,23 +199,110 @@ namespace ClubPenguin
                 return;
             }
 
+            AddEquipmentToInventory(definitionId);
+        }
+
+        public void AddEquipmentToInventory(int definitionId)
+        {
+            addEquipmentToInventory(definitionId, true);
+        }
+
+        public void AddEquipmentFromTweaker(int definitionId)
+        {
+            addEquipmentToInventory(definitionId, false);
+        }
+
+        private void addEquipmentToInventory(int definitionId, bool notifyChat)
+        {
+            if (equipmentCreationInProgress)
+            {
+                reportGrantError(notifyChat, "An equipment creation is already in progress.");
+                return;
+            }
+
             Dictionary<int, TemplateDefinition> templates = Service.Get<GameData>().Get<Dictionary<int, TemplateDefinition>>();
             TemplateDefinition templateDef;
             if (templates == null || !templates.TryGetValue(definitionId, out templateDef) || templateDef == null)
             {
-                postSystemChatError();
+                reportGrantError(notifyChat, "The requested template is unavailable.");
                 return;
             }
 
+            createEquipment(templateDef, notifyChat);
+        }
+
+        public void AddAllEquipmentToInventory()
+        {
+            startAddingAllEquipment(true);
+        }
+
+        public void AddAllEquipmentFromTweaker()
+        {
+            startAddingAllEquipment(false);
+        }
+
+        private void startAddingAllEquipment(bool notifyChat)
+        {
+            if (equipmentCreationInProgress)
+            {
+                reportGrantError(notifyChat, "An equipment creation is already in progress.");
+                return;
+            }
+            StartCoroutine(addAllEquipmentToInventory(notifyChat));
+        }
+
+        private IEnumerator addAllEquipmentToInventory(bool notifyChat)
+        {
+            isCreatingAllEquipment = true;
+            Dictionary<int, TemplateDefinition> templates = Service.Get<GameData>().Get<Dictionary<int, TemplateDefinition>>();
+            if (templates == null || templates.Count == 0)
+            {
+                isCreatingAllEquipment = false;
+                reportGrantError(notifyChat, "No templates are available.");
+                yield break;
+            }
+
+            foreach (TemplateDefinition template in templates.Values)
+            {
+                if (template == null)
+                {
+                    continue;
+                }
+
+                equipmentCreationComplete = false;
+                equipmentCreationFailed = false;
+                createEquipment(template, notifyChat);
+                while (!equipmentCreationComplete && !equipmentCreationFailed)
+                {
+                    yield return null;
+                }
+                if (equipmentCreationFailed)
+                {
+                    isCreatingAllEquipment = false;
+                    yield break;
+                }
+            }
+            isCreatingAllEquipment = false;
+            if (notifyChat)
+            {
+                postSystemChatGrantedEquipment();
+            }
+        }
+
+        private void createEquipment(TemplateDefinition templateDef, bool notifyChat)
+        {
             DCustomEquipment equipment = default(DCustomEquipment);
-            equipment.DefinitionId = definitionId;
+            equipment.DefinitionId = templateDef.Id;
             equipment.Name = templateDef.AssetName;
             equipment.Parts = new DCustomEquipmentPart[0];
             equipment.DateTimeCreated = DateTime.UtcNow.Ticks;
 
+            equipmentBeingCreated = equipment;
+            equipmentCreationInProgress = true;
+            equipmentCreationNotifyChat = notifyChat;
             CustomEquipment request = CustomEquipmentResponseAdaptor.ConvertCustomEquipmentToRequest(equipment);
-
             dispatcher.AddListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
+            dispatcher.AddListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
             Service.Get<INetworkServicesManager>().InventoryService.CreateCustomEquipment(request);
         }
 
@@ -222,17 +321,32 @@ namespace ClubPenguin
                 return;
             }
 
+            AddTubeToInventory(definitionId);
+        }
+
+        public void AddTubeToInventory(int definitionId)
+        {
+            addTubeToInventory(definitionId, true);
+        }
+
+        public void AddTubeFromTweaker(int definitionId)
+        {
+            addTubeToInventory(definitionId, false);
+        }
+
+        private void addTubeToInventory(int definitionId, bool notifyChat)
+        {
             Dictionary<int, TubeDefinition> tubeDefinitions = Service.Get<GameData>().Get<Dictionary<int, TubeDefinition>>();
             if (tubeDefinitions == null)
             {
-                postSystemChatError();
+                reportGrantError(notifyChat, "Tube definitions are unavailable.");
                 return;
             }
 
             TubeDefinition tubeDef;
             if (!tubeDefinitions.TryGetValue(definitionId, out tubeDef) || tubeDef == null)
             {
-                postSystemChatError();
+                reportGrantError(notifyChat, "The requested tube is unavailable.");
                 return;
             }
 
@@ -240,33 +354,120 @@ namespace ClubPenguin
             reward.Add(new TubeReward(definitionId));
             Service.Get<INetworkServicesManager>().RewardService.QA_SetReward(reward);
 
-            postSystemChatGrantedTube();
+            if (notifyChat)
+            {
+                postSystemChatGrantedTube();
+            }
+        }
+
+        public void AddAllTubesToInventory()
+        {
+            addAllTubesToInventory(true);
+        }
+
+        public void AddAllTubesFromTweaker()
+        {
+            addAllTubesToInventory(false);
+        }
+
+        private void addAllTubesToInventory(bool notifyChat)
+        {
+            Dictionary<int, TubeDefinition> tubeDefinitions = Service.Get<GameData>().Get<Dictionary<int, TubeDefinition>>();
+            if (tubeDefinitions == null)
+            {
+                reportGrantError(notifyChat, "Tube definitions are unavailable.");
+                return;
+            }
+
+            Reward reward = new Reward();
+            bool hasTubeReward = false;
+            foreach (TubeDefinition tube in tubeDefinitions.Values)
+            {
+                if (tube != null)
+                {
+                    reward.Add(new TubeReward(tube.Id));
+                    hasTubeReward = true;
+                }
+            }
+            if (!hasTubeReward)
+            {
+                reportGrantError(notifyChat, "No tubes are available.");
+                return;
+            }
+            Service.Get<INetworkServicesManager>().RewardService.QA_SetReward(reward);
+            if (notifyChat)
+            {
+                postSystemChatGrantedTube();
+            }
         }
 
         private bool onEquipmentCreated(InventoryServiceEvents.EquipmentCreated evt)
         {
             dispatcher.RemoveListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
+            dispatcher.RemoveListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
+            equipmentCreationComplete = true;
+            equipmentCreationInProgress = false;
 
             long equipmentId = evt.EquipmentId;
 
             DataEntityHandle localPlayerHandle = dataEntityCollection.LocalPlayerHandle;
 
             InventoryData inventoryData;
-            if (dataEntityCollection.TryGetComponent(localPlayerHandle, out inventoryData) && inventoryData.Inventory != null)
+            if (dataEntityCollection.TryGetComponent(localPlayerHandle, out inventoryData) && inventoryData != null)
             {
-                DCustomEquipment createdEquipment = default(DCustomEquipment);
+                DCustomEquipment createdEquipment = equipmentBeingCreated;
                 createdEquipment.Id = equipmentId;
                 createdEquipment.DateTimeCreated = DateTime.UtcNow.Ticks;
 
+                if (inventoryData.Inventory == null)
+                {
+                    inventoryData.Inventory = new Dictionary<long, InventoryIconModel<DCustomEquipment>>();
+                }
                 InventoryIconModel<DCustomEquipment> iconModel = new InventoryIconModel<DCustomEquipment>(equipmentId, createdEquipment, false, true);
                 if (!inventoryData.Inventory.ContainsKey(equipmentId))
                 {
                     inventoryData.Inventory.Add(equipmentId, iconModel);
                 }
             }
+            else
+            {
+                Debug.LogError("Unable to add created equipment: local player inventory data is unavailable.");
+            }
 
-            postSystemChatGrantedEquipment();
+            if (equipmentCreationNotifyChat && !isCreatingAllEquipment)
+            {
+                postSystemChatGrantedEquipment();
+            }
             return false;
+        }
+
+        private bool onEquipmentCreationError(InventoryServiceErrors.EquipmentCreationError evt)
+        {
+            dispatcher.RemoveListener<InventoryServiceEvents.EquipmentCreated>(onEquipmentCreated);
+            dispatcher.RemoveListener<InventoryServiceErrors.EquipmentCreationError>(onEquipmentCreationError);
+            equipmentCreationFailed = true;
+            equipmentCreationInProgress = false;
+            if (equipmentCreationNotifyChat)
+            {
+                postSystemChatError();
+            }
+            else
+            {
+                Debug.LogError("Unable to create the requested equipment.");
+            }
+            return false;
+        }
+
+        private void reportGrantError(bool notifyChat, string message)
+        {
+            if (notifyChat)
+            {
+                postSystemChatError();
+            }
+            else
+            {
+                Debug.LogError(message);
+            }
         }
 
         private void onTimeOutComplete()
