@@ -1,6 +1,5 @@
 There is a party switcher in-game. It can be accessed via the debug menu under the Party Switcher. Evergreen means regular mode without a party and you can also force a certain party to be always active. There is also an option to automatically start the parties yearly. This is the existing party schedule:
 
-
 Rainbow Migration: January 10th to February 1st
 Blizzard Beach: February 1st to March 1st
 Anniversary Party: March 8th to April 1st
