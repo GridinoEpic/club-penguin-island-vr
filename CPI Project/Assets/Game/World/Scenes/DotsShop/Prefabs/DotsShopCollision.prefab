@@ -2294,7 +2294,7 @@ GameObject:
   - component: {fileID: 6288105053651143911}
   m_Layer: 30
   m_Name: RackCollider
-  m_TagString: Untagged
+  m_TagString: Metal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
