@@ -9323,5 +9323,10 @@
   "Settings.Controls.Debug": "Menu de déboguement",
   "Settings.Controls.All": "Tous les contrôles",
   "Settings.Controls.Look": "Regardez autour de vous",
-  "Settings.Controls.Controller": "Contrôleur"
+  "Settings.Controls.Controller": "Contrôleur",
+  "ChatPhraseDefinition_DotsShop_1": "Remettez-moi ce truc d'où il vient, aidez-moi !",
+  "ChatPhraseDefinition_DotsShop_2": "Continue de nager.",
+  "ChatPhraseDefinition_DotsShop_3": "À l'infini et au-delà !",
+  "ChatPhraseDefinition_DotsShop_4": "La Griffe !",
+  "GlobalUI.Zone.DotsShop.Title": "le magasin Disney"
 }

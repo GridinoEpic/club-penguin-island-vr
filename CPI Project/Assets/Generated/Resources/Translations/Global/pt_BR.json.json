@@ -9323,5 +9323,10 @@
   "Settings.Controls.Debug": "Menu Debug",
   "Settings.Controls.All": "Todos os controles",
   "Settings.Controls.Look": "Olhar em volta",
-  "Settings.Controls.Controller": "Controlador"
+  "Settings.Controls.Controller": "Controlador",
+  "ChatPhraseDefinition_DotsShop_1": "Coloque aquela coisa de volta de onde veio ou então me ajude!",
+  "ChatPhraseDefinition_DotsShop_2": "Continua a nadar.",
+  "ChatPhraseDefinition_DotsShop_3": "Para o infinito e além!",
+  "ChatPhraseDefinition_DotsShop_4": "A Garra!",
+  "GlobalUI.Zone.DotsShop.Title": "a Disney Store"
 }
