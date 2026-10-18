@@ -27,6 +27,7 @@ Shader "CpRemix/Particles/Alpha Blended No Fog"
 
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             sampler2D _MainTex;
@@ -37,6 +38,7 @@ Shader "CpRemix/Particles/Alpha Blended No Fog"
                 float4 vertex : POSITION;
                 float4 color : COLOR;
                 float2 texcoord : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
@@ -48,6 +50,8 @@ Shader "CpRemix/Particles/Alpha Blended No Fog"
 
             v2f vert(appdata_t v)
             {
+                UNITY_SETUP_INSTANCE_ID(v);
+
                 v2f o;
                 o.vertex = TransformObjectToHClip(v.vertex.xyz);
                 o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
