@@ -617,7 +617,7 @@ public override void Steer(Vector2 steerInput)
 				{
 					mutableData.SprintParams.speedMult = mutableData.SprintParams.TurnSpeedMult;
 				}
-				vector2 = desiredFacing * mutableData.SprintParams.Speed * mutableData.SprintParams.speedMult;
+				vector2 = desiredFacing.normalized * mutableData.SprintParams.Speed * mutableData.SprintParams.speedMult;
 				TurnToDesiredFacing(mutableData.SprintParams.TurnSmoothing, mutableData.SprintParams.MaxTurnDegreesPerSec);
 			}
 			else if (isStopping)
