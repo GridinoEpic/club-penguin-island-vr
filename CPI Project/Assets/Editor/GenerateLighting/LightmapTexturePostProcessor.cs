@@ -24,12 +24,22 @@ internal static class LightmapTexturePostProcessor
 
         string assetPath = AssetDatabase.GetAssetPath(texture);
         TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-        if (importer == null || importer.maxTextureSize == LightmapTextureSize)
+        if (importer == null)
         {
             return;
         }
 
+        bool needsReimport = importer.maxTextureSize != LightmapTextureSize
+            || importer.mipmapEnabled
+            || importer.textureCompression != TextureImporterCompression.CompressedHQ;
+
         importer.maxTextureSize = LightmapTextureSize;
-        importer.SaveAndReimport();
+        importer.mipmapEnabled = false;
+        importer.textureCompression = TextureImporterCompression.CompressedHQ;
+
+        if (needsReimport)
+        {
+            importer.SaveAndReimport();
+        }
     }
 }
