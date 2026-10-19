@@ -1529,7 +1529,7 @@ public class CpRemixEquipmentTextureRenderer : EditorWindow
         }
 
         importer.textureType = TextureImporterType.Default;
-        importer.alphaIsTransparency = true;
+        importer.alphaIsTransparency = false;
         importer.mipmapEnabled = false;
         importer.wrapMode = TextureWrapMode.Clamp;
         importer.filterMode = FilterMode.Trilinear;
@@ -1671,6 +1671,11 @@ public class CpRemixEquipmentTextureRenderer : EditorWindow
             bakedTexture.ReadPixels(new Rect(0f, 0f, outputSize, outputSize), 0, 0);
             Color32[] bakedPixels = bakedTexture.GetPixels32();
             DilateRasterizedColors(bakedPixels, outputSize, 10);
+            for (int i = 0; i < bakedPixels.Length; i++)
+            {
+                bakedPixels[i].a = 255;
+            }
+
             bakedTexture.SetPixels32(bakedPixels);
             bakedTexture.Apply(false, false);
             return true;
