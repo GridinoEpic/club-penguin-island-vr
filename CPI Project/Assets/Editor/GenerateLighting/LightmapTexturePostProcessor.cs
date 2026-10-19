@@ -31,11 +31,15 @@ internal static class LightmapTexturePostProcessor
 
         bool needsReimport = importer.maxTextureSize != LightmapTextureSize
             || importer.mipmapEnabled
-            || importer.textureCompression != TextureImporterCompression.CompressedHQ;
+            || importer.textureCompression != TextureImporterCompression.CompressedHQ
+            || importer.filterMode != FilterMode.Trilinear
+            || importer.anisoLevel != 16;
 
         importer.maxTextureSize = LightmapTextureSize;
         importer.mipmapEnabled = false;
         importer.textureCompression = TextureImporterCompression.CompressedHQ;
+        importer.filterMode = FilterMode.Trilinear;
+        importer.anisoLevel = 16;
 
         if (needsReimport)
         {
