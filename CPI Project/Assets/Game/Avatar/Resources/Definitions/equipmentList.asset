@@ -1058,7 +1058,7 @@ MonoBehaviour:
     - SlotIndex: 8
       PartType: 2
       Required: 1
-  - Name: iheartmypuffle
+  - Name: iheartmypuffletee
     Parts:
     - SlotIndex: 8
       PartType: 0
