@@ -53,6 +53,10 @@ namespace ClubPenguin.UI
 
 		private bool isCommunicatorOpening = false;
 
+		private int cellPhoneHideRequest;
+
+		private bool disabledCellPhoneButtonForHide;
+
 		private void Awake()
 		{
 			animator = GetComponent<Animator>();
@@ -72,6 +76,7 @@ namespace ClubPenguin.UI
 			eventChannel.AddListener<CinematicSpeechEvents.ShowSpeechEvent>(onShowSpeech);
 			eventChannel.AddListener<CinematicSpeechEvents.SpeechCompleteEvent>(onSpeechComplete);
 			eventChannel.AddListener<SplashScreenEvents.SplashScreenClosed>(onSplashScreenClosed);
+			eventChannel.AddListener<HudEvents.ShowCellPhoneHud>(onShowCellPhoneHud);
 			toggleCommunicatorHudEnabled(false);
 			toggleMessageHudEnabled(false);
 			QuestPointerPanel.SetActive(false);
@@ -118,6 +123,17 @@ namespace ClubPenguin.UI
 			Service.Get<EventDispatcher>().DispatchEvent(default(HudEvents.ShowCellPhoneHud));
 			Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.EnableUIElement("CellphoneButton"));
 			setState(QuestHudState.Closed);
+			return false;
+		}
+
+		private bool onShowCellPhoneHud(HudEvents.ShowCellPhoneHud evt)
+		{
+			cellPhoneHideRequest++;
+			if (disabledCellPhoneButtonForHide)
+			{
+				disabledCellPhoneButtonForHide = false;
+				Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.EnableUIElement("CellphoneButton"));
+			}
 			return false;
 		}
 
@@ -303,13 +319,15 @@ namespace ClubPenguin.UI
 
 		private IEnumerator hideCellPhone()
 		{
+			int hideRequest = ++cellPhoneHideRequest;
 			yield return new WaitForEndOfFrame();
 			float animTime = animator.GetCurrentAnimatorStateInfo(0).length;
 			yield return new WaitForSeconds(animTime);
-			if (!animator.GetBool("isCommunicatorOpen"))
+			if (hideRequest == cellPhoneHideRequest && !animator.GetBool("isCommunicatorOpen"))
 			{
 				Service.Get<EventDispatcher>().DispatchEvent(default(HudEvents.HideCellPhoneHud));
 				Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.DisableUIElement("CellphoneButton"));
+				disabledCellPhoneButtonForHide = true;
 			}
 		}
 
