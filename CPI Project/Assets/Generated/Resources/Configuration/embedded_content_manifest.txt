@@ -7734,8 +7734,6 @@ asset:definitions/claimablereward/claimablereward_34_waddleon2018?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_34_waddleon2018.reward?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_35_thevault?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_35_thevault.reward?dl=res&x=asset
-asset:definitions/claimablereward/claimablereward_39_cpifthrowback?dl=res&x=asset
-asset:definitions/claimablereward/claimablereward_39_cpifthrowback.reward?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_40_opencpi1stanniversary?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_40_opencpi1stanniversary.reward?dl=res&x=asset
 asset:definitions/claimablereward/claimablereward_41_anniversary20?dl=res&x=asset
@@ -7751,7 +7749,6 @@ asset:definitions/rewardtheme/claimedreward_20thanniversary?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_anniversary2026?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_blizzardbeach?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_borninchina?dl=res&x=asset
-asset:definitions/rewardtheme/claimedreward_cpifthrowback?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_danceevent?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_gameweekend?dl=res&x=asset
 asset:definitions/rewardtheme/claimedreward_halloween2017?dl=res&x=asset
@@ -16173,5 +16170,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:0493eb9ec5b08ebb783b499f1f1d3410341c3189
+contentversion:e0f030fb20d4e8b9f85137da0f5f80c05e382529
 contentmanifesthash:
