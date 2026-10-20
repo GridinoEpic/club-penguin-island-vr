@@ -82,6 +82,12 @@ public static class CreateAssetBundles
                 continue;
             }
 
+            BundledAssetGroupSchema schema = group.GetSchema<BundledAssetGroupSchema>();
+            if (schema == null || !schema.IncludeInBuild)
+            {
+                continue;
+            }
+
             string bundleName = GetAddressableBundleName(group);
             if (!string.IsNullOrEmpty(bundleName))
             {
