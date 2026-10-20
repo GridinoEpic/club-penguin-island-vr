@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ece58e73b924e2d8be523e938e36614, type: 3}
   m_Name: Template_421_IHeartMyPuffleTee
   m_EditorClassIdentifier: 
-  Id: 159
-  AssetName: tShirt
+  Id: 421
+  AssetName: IHeartMyPuffleTee
   WorkInProgress: 0
-  Name: Template_159_tShirt.Title
-  Description: Template_159_tShirt.Description
-  Cost: 50
+  Name: Clothing.IHeartMyPuffleTee.Title
+  Description: Clothing.IHeartMyPuffleTee.Description
+  Cost: 0
   CategoryKey:
     Key: Definitions/Equipment/EquipmentCategoryDefinitions/Tops
     type: ClubPenguin.EquipmentCategoryDefinition, ReMix-Game
-  IsEditable: 1
-  IsMemberOnlyCreatable: 1
+  IsEditable: 0
+  IsMemberOnlyCreatable: 0
   ZoomOffset: -0.24
   RotationYOffset: 0
   Tags:
