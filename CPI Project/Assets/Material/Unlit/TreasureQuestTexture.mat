@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TreasureQuestTexture
-  m_Shader: {fileID: 4800000, guid: 9384df20fc0959644a3826a0e4999bf0, type: 3}
+  m_Shader: {fileID: 4800000, guid: db5ed34b15964f16ba989df733c1a0a5, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -37,6 +37,7 @@ Material:
     m_Ints: []
     m_Floats:
     - PixelSnap: 0
+    - _AlphaCutoff: 0.01
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5
