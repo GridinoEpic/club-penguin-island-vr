@@ -14,200 +14,115 @@ Shader "Cg shader for toon shading"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-
-        Pass
+        Tags
         {
-            Tags { "LightMode"="ForwardBase" }
-
-            HLSLPROGRAM
-
-            #pragma target 4.0
-            #pragma vertex vert
-            #pragma fragment frag
-
-            #include "UnityCG.cginc"
-            #include "Lighting.cginc"
-
-            float4 _Color;
-            float4 _UnlitColor;
-            float _DiffuseThreshold;
-            float4 _OutlineColor;
-            float _LitOutlineThickness;
-            float _UnlitOutlineThickness;
-            float _Shininess;
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float3 normal : NORMAL;
-            };
-
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-                float3 worldPos : TEXCOORD0;
-                float3 worldNormal : TEXCOORD1;
-            };
-
-            v2f vert(appdata v)
-            {
-                v2f o;
-
-                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.worldPos = worldPos.xyz;
-                o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
-
-                return o;
-            }
-
-            float4 frag(v2f i) : SV_Target
-            {
-                float3 N = normalize(i.worldNormal);
-
-                float3 L;
-                float attenuation;
-
-                if (_WorldSpaceLightPos0.w == 0.0)
-                {
-                    L = normalize(_WorldSpaceLightPos0.xyz);
-                    attenuation = 1.0;
-                }
-                else
-                {
-                    float3 lightVec = _WorldSpaceLightPos0.xyz - i.worldPos;
-                    float dist = max(length(lightVec), 0.00001);
-                    L = lightVec / dist;
-                    attenuation = 1.0 / dist;
-                }
-
-                float3 V = normalize(_WorldSpaceCameraPos - i.worldPos);
-
-                float ndotl = max(dot(N, L), 0.0) * attenuation;
-
-                float3 baseColor =
-                    (ndotl >= _DiffuseThreshold)
-                    ? (_Color.rgb * _LightColor0.rgb)
-                    : _UnlitColor.rgb;
-
-                float outlineThreshold =
-                    _UnlitOutlineThickness +
-                    ((_LitOutlineThickness - _UnlitOutlineThickness) * ndotl);
-
-                if (dot(V, N) < outlineThreshold)
-                {
-                    baseColor = _OutlineColor.rgb;
-                }
-
-                float3 R = reflect(-L, N);
-
-                float spec =
-                    pow(
-                        max(dot(R, V), 0.0),
-                        max(_Shininess, 0.0001)
-                    ) * attenuation;
-
-                if (spec > 0.5 && ndotl > 0.0)
-                {
-                    baseColor =
-                        lerp(
-                            baseColor,
-                            _SpecColor.rgb,
-                            _SpecColor.a
-                        );
-                }
-
-                return float4(baseColor, 1.0);
-            }
-
-            ENDHLSL
+            "RenderPipeline" = "UniversalPipeline"
+            "RenderType" = "Opaque"
+            "Queue" = "Geometry"
         }
 
         Pass
         {
-            Tags { "LightMode"="ForwardAdd" }
-
-            Blend SrcAlpha OneMinusSrcAlpha
+            Tags { "LightMode" = "UniversalForward" }
 
             HLSLPROGRAM
-
             #pragma target 4.0
-            #pragma vertex vert
-            #pragma fragment frag
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS
 
-            #include "UnityCG.cginc"
-            #include "Lighting.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-            float _Shininess;
+            CBUFFER_START(UnityPerMaterial)
+                half4 _Color;
+                half4 _UnlitColor;
+                half _DiffuseThreshold;
+                half4 _OutlineColor;
+                half _LitOutlineThickness;
+                half _UnlitOutlineThickness;
+                half4 _SpecColor;
+                half _Shininess;
+            CBUFFER_END
 
-            struct appdata
+            struct Attributes
             {
-                float4 vertex : POSITION;
-                float3 normal : NORMAL;
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
             };
 
-            struct v2f
+            struct Varyings
             {
-                float4 pos : SV_POSITION;
-                float3 worldPos : TEXCOORD0;
-                float3 worldNormal : TEXCOORD1;
+                float4 positionHCS : SV_POSITION;
+                float3 positionWS : TEXCOORD0;
+                half3 normalWS : TEXCOORD1;
             };
 
-            v2f vert(appdata v)
+            Varyings Vert(Attributes input)
             {
-                v2f o;
-
-                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.worldPos = worldPos.xyz;
-                o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
-
-                return o;
+                Varyings output;
+                VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
+                output.positionHCS = positionInputs.positionCS;
+                output.positionWS = positionInputs.positionWS;
+                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                return output;
             }
 
-            float4 frag(v2f i) : SV_Target
+            half3 ApplySpecular(half3 color, half3 normalWS, half3 viewDirectionWS, Light light)
             {
-                float3 N = normalize(i.worldNormal);
-                float3 V = normalize(_WorldSpaceCameraPos - i.worldPos);
+                half ndotl = saturate(dot(normalWS, light.direction));
+                half3 reflectionDirection = reflect(-light.direction, normalWS);
+                half specular = pow(
+                    saturate(dot(reflectionDirection, viewDirectionWS)),
+                    max(_Shininess, 0.0001)
+                ) * light.distanceAttenuation * light.shadowAttenuation;
 
-                float3 L;
-
-                if (_WorldSpaceLightPos0.w == 0.0)
+                if (specular > 0.5 && ndotl > 0.0)
                 {
-                    L = normalize(_WorldSpaceLightPos0.xyz);
-                }
-                else
-                {
-                    L = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+                    color = lerp(color, _SpecColor.rgb * light.color, _SpecColor.a);
                 }
 
-                float ndotl = max(dot(N, L), 0.0);
-
-                float3 R = reflect(-L, N);
-
-                float spec =
-                    pow(
-                        max(dot(R, V), 0.0),
-                        max(_Shininess, 0.0001)
-                    );
-
-                if (spec > 0.5 && ndotl > 0.0)
-                {
-                    return float4(
-                        _LightColor0.rgb * _SpecColor.rgb,
-                        _SpecColor.a
-                    );
-                }
-
-                return float4(0,0,0,0);
+                return color;
             }
 
+            half4 Frag(Varyings input) : SV_Target
+            {
+                half3 normalWS = normalize(input.normalWS);
+                half3 viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+                Light mainLight = GetMainLight();
+
+                half ndotl = saturate(dot(normalWS, mainLight.direction))
+                    * mainLight.distanceAttenuation;
+                half3 color = ndotl >= _DiffuseThreshold
+                    ? _Color.rgb * mainLight.color
+                    : _UnlitColor.rgb;
+
+                half outlineThreshold = lerp(
+                    _UnlitOutlineThickness,
+                    _LitOutlineThickness,
+                    ndotl
+                );
+                if (dot(viewDirectionWS, normalWS) < outlineThreshold)
+                {
+                    color = _OutlineColor.rgb;
+                }
+
+                color = ApplySpecular(color, normalWS, viewDirectionWS, mainLight);
+
+                #if defined(_ADDITIONAL_LIGHTS)
+                uint additionalLightsCount = GetAdditionalLightsCount();
+                for (uint lightIndex = 0u; lightIndex < additionalLightsCount; ++lightIndex)
+                {
+                    Light light = GetAdditionalLight(lightIndex, input.positionWS);
+                    color = ApplySpecular(color, normalWS, viewDirectionWS, light);
+                }
+                #endif
+
+                return half4(color, 1.0);
+            }
             ENDHLSL
         }
     }
 
-    FallBack "Specular"
+    FallBack Off
 }

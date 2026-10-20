@@ -1,147 +1,98 @@
-Shader "Custom/OutlineSilouetted Diffuse" {
-    Properties {
+Shader "Custom/OutlineSilouetted Diffuse"
+{
+    Properties
+    {
         _Color ("Color", Vector) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0, 1)) = 0.5
         _Metallic ("Metallic", Range(0, 1)) = 0
     }
-    SubShader {
-        LOD 200
-        Tags { "RenderType" = "Opaque" }
-        Pass {
-            Name "FORWARD"
-            LOD 200
-            Tags { "LIGHTMODE" = "FORWARDBASE" "RenderType" = "Opaque" "SHADOWSUPPORT" = "true" }
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-            
-            struct v2f {
-                float4 position : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
-                float3 worldNormal : TEXCOORD1;
-                float3 worldPos : TEXCOORD2;
-            };
 
-            float4 _MainTex_ST;
-            float4 _LightColor0;
-            float _Glossiness;
-            float _Metallic;
-            float4 _Color;
-            sampler2D _MainTex;
-
-            v2f vert(appdata_full v) {
-                v2f o;
-                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.worldPos = worldPos.xyz;
-
-                o.position = UnityObjectToClipPos(v.vertex);
-
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-
-                o.worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
-                return o;
-            }
-
-            float4 frag(v2f i) : SV_Target {
-                float4 albedo = tex2D(_MainTex, i.texcoord) * _Color;
-
-                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
-                float diff = max(dot(i.worldNormal, lightDir), 0.0);
-                float3 diffuse = diff * _LightColor0.rgb * albedo.rgb;
-
-                return float4(diffuse, albedo.a);
-            }
-            ENDCG
+    SubShader
+    {
+        Tags
+        {
+            "RenderPipeline" = "UniversalPipeline"
+            "RenderType" = "Opaque"
+            "Queue" = "Geometry"
         }
 
-        Pass {
-            Name "FORWARDADD"
-            LOD 200
-            Tags { "LIGHTMODE" = "FORWARDADD" "RenderType" = "Opaque" "SHADOWSUPPORT" = "true" }
-            Blend One One, One One
-            ZWrite Off
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
+        Pass
+        {
+            Name "Forward"
+            Tags { "LightMode" = "UniversalForward" }
 
-            struct v2f {
-                float4 position : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
-                float3 worldNormal : TEXCOORD1;
-                float3 worldPos : TEXCOORD2;
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _MainTex_ST;
+                half4 _Color;
+                half _Glossiness;
+                half _Metallic;
+            CBUFFER_END
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+                float2 uv : TEXCOORD0;
             };
 
-            float4 _MainTex_ST;
-            float4 _LightColor0;
-            float _Glossiness;
-            float _Metallic;
-            float4 _Color;
-            sampler2D _MainTex;
-
-            v2f vert(appdata_full v) {
-                v2f o;
-                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.worldPos = worldPos.xyz;
-                o.position = UnityObjectToClipPos(v.vertex);
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-                o.worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
-                return o;
-            }
-
-            float4 frag(v2f i) : SV_Target {
-                float4 albedo = tex2D(_MainTex, i.texcoord) * _Color;
-                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
-                float diff = max(dot(i.worldNormal, lightDir), 0.0);
-                float3 diffuse = diff * _LightColor0.rgb * albedo.rgb;
-                return float4(diffuse, albedo.a);
-            }
-            ENDCG
-        }
-        
-        Pass {
-            Name "DEFERRED"
-            LOD 200
-            Tags { "LIGHTMODE" = "DEFERRED" "RenderType" = "Opaque" }
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-
-            struct v2f {
-                float4 position : SV_POSITION;
-                float2 texcoord : TEXCOORD0;
-                float3 worldNormal : TEXCOORD1;
-                float3 worldPos : TEXCOORD2;
+            struct Varyings
+            {
+                float4 positionHCS : SV_POSITION;
+                float3 positionWS : TEXCOORD0;
+                half3 normalWS : TEXCOORD1;
+                float2 uv : TEXCOORD2;
             };
 
-            float4 _MainTex_ST;
-            float4 _Color;
-            float _Glossiness;
-            float _Metallic;
-            sampler2D _MainTex;
-
-            v2f vert(appdata_full v) {
-                v2f o;
-                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.worldPos = worldPos.xyz;
-                o.position = UnityObjectToClipPos(v.vertex);
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-                o.worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, v.normal));
-                return o;
+            Varyings Vert(Attributes input)
+            {
+                Varyings output;
+                VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
+                output.positionHCS = positionInputs.positionCS;
+                output.positionWS = positionInputs.positionWS;
+                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+                return output;
             }
 
-            float4 frag(v2f i) : SV_Target {
-                float4 albedo = tex2D(_MainTex, i.texcoord) * _Color;
-                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
-                float diff = max(dot(i.worldNormal, lightDir), 0.0);
-                float3 diffuse = diff * albedo.rgb;
-                return float4(diffuse, albedo.a);
+            half4 Frag(Varyings input) : SV_Target
+            {
+                half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * _Color;
+                half3 normalWS = normalize(input.normalWS);
+                Light mainLight = GetMainLight();
+                half diffuse = saturate(dot(normalWS, mainLight.direction))
+                    * mainLight.distanceAttenuation
+                    * mainLight.shadowAttenuation;
+                half3 color = diffuse * mainLight.color * albedo.rgb;
+
+                #if defined(_ADDITIONAL_LIGHTS)
+                uint additionalLightsCount = GetAdditionalLightsCount();
+                for (uint lightIndex = 0u; lightIndex < additionalLightsCount; ++lightIndex)
+                {
+                    Light light = GetAdditionalLight(lightIndex, input.positionWS);
+                    half additionalDiffuse = saturate(dot(normalWS, light.direction))
+                        * light.distanceAttenuation
+                        * light.shadowAttenuation;
+                    color += additionalDiffuse * light.color * albedo.rgb;
+                }
+                #endif
+
+                return half4(color, albedo.a);
             }
-            ENDCG
+            ENDHLSL
         }
     }
-    Fallback "Diffuse"
+
+    FallBack Off
 }
