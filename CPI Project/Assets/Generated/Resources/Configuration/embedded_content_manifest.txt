@@ -15864,11 +15864,6 @@ asset:quests/aac001q001leakyship/zones/boardwalk/aac001q001leakyship?dl=bundle:s
 asset:quests/aac001q001leakyshipshortened/mascots/dialog/aaobj8?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c01q01.sa.unity3d&p=game/adventure/assetbundles
 asset:quests/aac001q001leakyshipshortened/zones/boardwalk/triggers/triggerwalkgeyser3?dl=bundle:sa-bundle&x=prefab&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c01q01.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c01q01.sa.unity3d?d=assetbundles/generated/standalonewindows64/mascot.sa.unity3d&p=0
-asset:mtblizzardlightmappingskybox?dl=bundle:sa-bundle&x=mat&b=assetbundles/generated/standalonewindows64/editor/lightmapping.sa.unity3d&p=game/world/scenes/mtblizzard
-asset:divinglightmappingskybox?dl=bundle:sa-bundle&x=mat&b=assetbundles/generated/standalonewindows64/editor/lightmapping.sa.unity3d&p=game/world/scenes/diving
-asset:piratepartyskyboxforbakinglightmaps?dl=bundle:sa-bundle&x=mat&b=assetbundles/generated/standalonewindows64/editor/lightmapping.sa.unity3d&p=game/world/scenes/events/pirateparty2018/resources/scenes/eventpirateparty
-asset:lightmappingskybox?dl=bundle:sa-bundle&x=mat&b=assetbundles/generated/standalonewindows64/editor/lightmapping.sa.unity3d&p=game/world/scenes/globalassets/materials
-bundle:assetbundles/generated/standalonewindows64/editor/lightmapping.sa.unity3d?d=&p=0
 asset:furniture/level07/archway/archway_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level07.sa.unity3d&p=modules/igloo/assetbundles
 asset:furniture/level07/turret/turret_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level07.sa.unity3d&p=modules/igloo/assetbundles
 asset:furniture/level07/walltorch/walltorch_furnitureicon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/igloo/level07.sa.unity3d&p=modules/igloo/assetbundles
