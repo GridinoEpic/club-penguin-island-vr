@@ -585,6 +585,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a6ca8bf9a343eb469532dd27913e01a
+    m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/decal_watermelon.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - avatar.sa.unity3d.txt
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1b56e633dfc898d419f236bddcf979f6
     m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/decal_punk_silverchain.png
     m_ReadOnly: 0
