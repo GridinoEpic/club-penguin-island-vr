@@ -11441,6 +11441,7 @@ asset:decals/fabric_aach2_sand?dl=bundle:sa-bundle&x=png&b=assetbundles/generate
 asset:decals/decal_emotes_stinkycheese?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_toystory_pizzaplanet?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/pizza/pizza_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:decals/decal_watermelon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/decal_punk_silverchain?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/toqueaboutit/toqueaboutit_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/decal_monsters_university_mikeproud?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
@@ -11900,6 +11901,7 @@ asset:avatar/equipment/shoulderpack/shoulderpack_icon?dl=bundle:sa-bundle&x=png&
 asset:decals/fabric_event_20cake?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/sunglasses/sunglasses_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/rogueshirt/rogueshirt_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:avatar/equipment/plaintee/plaintee_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_townhero_tiretread?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/decal_fancypants_buttonsbrass?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/returningmemberjacketnine/returningmemberjacketnine_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
@@ -12208,7 +12210,6 @@ asset:decals/decal_ambassador_levelbadge?dl=bundle:sa-bundle&x=png&b=assetbundle
 asset:decals/decal_punk_skull?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/motorcyclejacket/motorcyclejacket_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_rdma_dots?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
-asset:decals/decal_watermelon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 bundle:assetbundles/generated/standalonewindows64/avatar.sa.unity3d?d=&p=0
 asset:screenpenguinprofiledefinitions/screenpenguinprofileprofile?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d&p=game/ui/screenpenguin/screenpenguinprofile/assetbundles
 bundle:assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d?d=&p=0
@@ -16171,5 +16172,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:acfa1cc45329b031306462d50d2631ea3ea69ddc
+contentversion:9644b127b9e8967b77389cd29858e310689a1a3f
 contentmanifesthash:

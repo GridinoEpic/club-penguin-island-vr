@@ -3345,6 +3345,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a8223f9730618cc4d910ca7bb5e77955
+    m_Address: assets/assetpipeline/bundleassets/assetbundles/avatar/equipment/plaintee/plaintee_icon.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - avatar.sa.unity3d.txt
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a82731cf7d071bc46b7083c62e0e9129
     m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/fabric_townhero_tiretread.png
     m_ReadOnly: 0
