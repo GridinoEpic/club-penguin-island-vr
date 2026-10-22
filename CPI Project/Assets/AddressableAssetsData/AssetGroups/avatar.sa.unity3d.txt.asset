@@ -214,7 +214,7 @@ MonoBehaviour:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0975acb2d8b93f849b0ec838ae4f2462
-    m_Address: Assets/AssetPipeline/BundleAssets/AssetBundles/Decals/fabric_watermelon.png
+    m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/fabric_watermelon.png
     m_ReadOnly: 0
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
@@ -3958,7 +3958,7 @@ MonoBehaviour:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1a8438e38c6ca746a4de5111b02b641
-    m_Address: Assets/AssetPipeline/BundleAssets/AssetBundles/Decals/fabric_watermelon_2.png
+    m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/fabric_watermelon_2.png
     m_ReadOnly: 0
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
