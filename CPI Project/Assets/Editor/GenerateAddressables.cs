@@ -23,6 +23,7 @@ public static class GenerateAddressables
         ModifyTextFile(platform);
 
         AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+        NormalizePathBasedAddresses(settings);
         ConfigureLocalGroups(settings, new List<AddressableAssetGroup>(settings.groups), platform);
         settings.ActivePlayerDataBuilderIndex = GetAddressableBundleNameBuilderIndex(settings);
         AssetDatabase.SaveAssets();
@@ -148,6 +149,25 @@ public static class GenerateAddressables
         settings.profileSettings.SetValue(settings.activeProfileId, AddressableAssetSettings.kLocalBuildPath, buildPath);
         settings.profileSettings.SetValue(settings.activeProfileId, AddressableAssetSettings.kLocalLoadPath, loadPath);
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.ProfileModified, settings, true, true);
+    }
+
+    private static void NormalizePathBasedAddresses(AddressableAssetSettings settings)
+    {
+        foreach (AddressableAssetGroup group in settings.groups)
+        {
+            if (group == null)
+            {
+                continue;
+            }
+
+            foreach (AddressableAssetEntry entry in group.entries)
+            {
+                if (string.Equals(entry.address, entry.AssetPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    entry.address = entry.AssetPath.ToLowerInvariant();
+                }
+            }
+        }
     }
 
     private static string GetPlatformName(BuildTarget target)
