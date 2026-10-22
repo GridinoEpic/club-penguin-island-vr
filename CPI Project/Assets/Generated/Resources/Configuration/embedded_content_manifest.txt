@@ -5073,6 +5073,7 @@ asset:definitions/equipment/fabricdefinitions/fabric_313_mickey_grey?dl=res&x=as
 asset:definitions/equipment/fabricdefinitions/fabric_314_mickey_flatblue?dl=res&x=asset
 asset:definitions/equipment/fabricdefinitions/fabric_315_mickey_flatgrey?dl=res&x=asset
 asset:definitions/equipment/fabricdefinitions/fabric_316_watermelon?dl=res&x=asset
+asset:definitions/equipment/fabricdefinitions/fabric_317_watermelon_2?dl=res&x=asset
 asset:definitions/equipment/faerywings_sec_torso_0lod?dl=res&x=asset
 asset:definitions/equipment/faerywings_sec_torso_1lod?dl=res&x=asset
 asset:definitions/equipment/fancyupdo_add_head_0lod?dl=res&x=asset
@@ -12205,6 +12206,7 @@ asset:decals/decal_punk_skull?dl=bundle:sa-bundle&x=png&b=assetbundles/generated
 asset:avatar/equipment/motorcyclejacket/motorcyclejacket_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_rdma_dots?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_watermelon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:decals/fabric_watermelon_2?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 bundle:assetbundles/generated/standalonewindows64/avatar.sa.unity3d?d=&p=0
 asset:screenpenguinprofiledefinitions/screenpenguinprofileprofile?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d&p=game/ui/screenpenguin/screenpenguinprofile/assetbundles
 bundle:assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d?d=&p=0
@@ -16167,5 +16169,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:79f2dd22e57bea63cf4ddf902f33426f763d4879
+contentversion:86a7fb5ec1ac477d13c2da79e6ccdba761db2577
 contentmanifesthash:

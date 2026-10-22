@@ -3957,6 +3957,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1a8438e38c6ca746a4de5111b02b641
+    m_Address: Assets/AssetPipeline/BundleAssets/AssetBundles/Decals/fabric_watermelon_2.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - avatar.sa.unity3d.txt
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1edfa2153c9d32489e177c4d81a469d
     m_Address: assets/assetpipeline/bundleassets/assetbundles/avatar/equipment/jeans/jeans_icon.png
     m_ReadOnly: 0
