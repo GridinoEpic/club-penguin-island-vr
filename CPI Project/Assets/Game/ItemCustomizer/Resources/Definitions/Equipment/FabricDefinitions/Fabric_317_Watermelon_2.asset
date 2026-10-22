@@ -22,5 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed14cc25e7f500c47abe12f01ec75d66, type: 2}
   - {fileID: 11400000, guid: 34a0cdfc8b05c0147844dbfe1b78edb5, type: 2}
   - {fileID: 11400000, guid: c6904f7f2a63f614bb2e80458ad23884, type: 2}
+  - {fileID: 11400000, guid: 76a6857edb815ae46aa930de50fcca29, type: 2}
+  - {fileID: 11400000, guid: ea86dbe53217ff24f85f6c1c6a3be344, type: 2}
   allowRotationAndScale: 1
   isMemberOnly: 0
