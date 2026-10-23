@@ -15,6 +15,14 @@ namespace ClubPenguin.Core
             {
                 return TweakerPlatformType;
             }
+#if UNITY_ANDROID || UNITY_IOS
+            if (Application.platform == RuntimePlatform.WindowsEditor ||
+                Application.platform == RuntimePlatform.LinuxEditor ||
+                Application.platform == RuntimePlatform.OSXEditor)
+            {
+                return PlatformType.Mobile;
+            }
+#endif
             switch (Application.platform)
             {
                 case RuntimePlatform.IPhonePlayer:
