@@ -198,11 +198,14 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 			public readonly float ZoomOffset;
 
-			public CameraZoomInOnGameObject(Transform objectTransform, List<MeshCollider> meshColliders, float zoomOffset)
+			public readonly float HorizontalOffset;
+
+			public CameraZoomInOnGameObject(Transform objectTransform, List<MeshCollider> meshColliders, float zoomOffset, float horizontalOffset)
 			{
 				ObjectTransform = objectTransform;
 				ObjectMeshColliders = meshColliders;
 				ZoomOffset = zoomOffset;
+				HorizontalOffset = horizontalOffset;
 			}
 		}
 

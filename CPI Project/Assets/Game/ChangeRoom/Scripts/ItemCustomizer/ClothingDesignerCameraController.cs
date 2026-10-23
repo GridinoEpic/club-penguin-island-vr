@@ -151,8 +151,8 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 				bounds.Encapsulate(objectMeshColliders[num].bounds);
 			}
 			center = bounds.center;
-			Vector3 normalized = (center - mainCamera.transform.position).normalized;
-			targetRotation = Quaternion.LookRotation(normalized);
+			Vector3 horizontalOffsetCenter = center + mainCamera.transform.right * evt.HorizontalOffset;
+			targetRotation = Quaternion.LookRotation((horizontalOffsetCenter - mainCamera.transform.position).normalized);
 			return false;
 		}
 

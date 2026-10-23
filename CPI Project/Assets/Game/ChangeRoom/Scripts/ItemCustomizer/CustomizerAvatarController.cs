@@ -36,6 +36,8 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private float itemZoomOffset;
 
+		private float itemCameraHorizontalOffset;
+
 		private EventChannel customizerEventChannel;
 
 		private EventChannel serviceEventChannel;
@@ -129,7 +131,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 					list.Add(component);
 				}
 			}
-			CustomizationContext.EventBus.DispatchEvent(new CustomizerUIEvents.CameraZoomInOnGameObject(base.transform, list, itemZoomOffset));
+			CustomizationContext.EventBus.DispatchEvent(new CustomizerUIEvents.CameraZoomInOnGameObject(base.transform, list, itemZoomOffset, itemCameraHorizontalOffset));
 		}
 
 		private void setDefaultEquipmentValues(DecalMaterialProperties[] defaultDecalMaterials)
@@ -250,6 +252,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			currentEquipment.Name = templateDefinition.AssetName;
 			totalRenders = equipmentDefinition.Parts.Length;
 			itemZoomOffset = templateDefinition.ZoomOffset;
+			itemCameraHorizontalOffset = templateDefinition.CameraHorizontalOffset;
 			Model.ApplyEquipment(currentEquipment);
 		}
 
