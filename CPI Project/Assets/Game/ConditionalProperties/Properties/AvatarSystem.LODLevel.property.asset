@@ -15,6 +15,7 @@ MonoBehaviour:
   SendAnalytics: 1
   DefaultValue: 0
   _Tiers:
+  - {fileID: 11400000, guid: facfc57c55a74375b71671a0c88b1651, type: 2}
   - {fileID: 11400000, guid: 00ca6fb77aabb3d4eb2f2cfe234101c7, type: 2}
   - {fileID: 11400000, guid: 0e5a45030ec6ffa46bdf0eea90409590, type: 2}
   - {fileID: 11400000, guid: ca6b435f419302b468205a74985e5db9, type: 2}
