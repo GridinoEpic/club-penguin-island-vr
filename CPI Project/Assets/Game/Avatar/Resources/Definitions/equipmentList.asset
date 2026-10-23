@@ -1602,6 +1602,11 @@ MonoBehaviour:
     - SlotIndex: 8
       PartType: 1
       Required: 1
+  - Name: plaintee
+    Parts:
+    - SlotIndex: 8
+      PartType: 0
+      Required: 1
   - Name: platinumtshirt
     Parts:
     - SlotIndex: 8

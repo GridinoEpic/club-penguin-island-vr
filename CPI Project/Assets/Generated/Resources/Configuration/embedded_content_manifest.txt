@@ -5477,6 +5477,8 @@ asset:definitions/equipment/pizzaplanettee_rep_torso_0lod?dl=res&x=asset
 asset:definitions/equipment/pizzaplanettee_rep_torso_1lod?dl=res&x=asset
 asset:definitions/equipment/placeholder_add_torso_0lod?dl=res&x=asset
 asset:definitions/equipment/placeholder_add_torso_1lod?dl=res&x=asset
+asset:definitions/equipment/plaintee_rep_torso_0lod?dl=res&x=asset
+asset:definitions/equipment/plaintee_rep_torso_1lod?dl=res&x=asset
 asset:definitions/equipment/platinumtshirt_rep_torso_0lod?dl=res&x=asset
 asset:definitions/equipment/platinumtshirt_rep_torso_1lod?dl=res&x=asset
 asset:definitions/equipment/pointycuff_rep_lefthand_0lod?dl=res&x=asset
@@ -6118,6 +6120,7 @@ asset:definitions/equipment/templatedefinitions/template_419_ocpitee?dl=res&x=as
 asset:definitions/equipment/templatedefinitions/template_420_warmsweater?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_421_iheartmypuffletee?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_422_scarf?dl=res&x=asset
+asset:definitions/equipment/templatedefinitions/template_423_plaintee?dl=res&x=asset
 asset:definitions/equipment/templatedefinitions/template_999_placeholder?dl=res&x=asset
 asset:definitions/equipment/templaterenderdefinitions/alienbody_renderdata?dl=res&x=asset
 asset:definitions/equipment/templaterenderdefinitions/alienfeet_renderdata?dl=res&x=asset
@@ -11492,6 +11495,7 @@ asset:avatar/equipment/cape/cape_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/g
 asset:avatar/equipment/masquerademask/masquerademask_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_community_stripes?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/fishnecklace/fishnecklace_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
+asset:avatar/equipment/scarf/scarf_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_dotm_pattern8?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_fancypants_plaidwarm?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/prehistorictwopiece/prehistorictwopiece_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
@@ -12213,7 +12217,6 @@ asset:decals/decal_ambassador_levelbadge?dl=bundle:sa-bundle&x=png&b=assetbundle
 asset:decals/decal_punk_skull?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:avatar/equipment/motorcyclejacket/motorcyclejacket_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 asset:decals/fabric_rdma_dots?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
-asset:avatar/equipment/scarf/scarf_icon?dl=bundle:sa-bundle&x=png&b=assetbundles/generated/standalonewindows64/avatar.sa.unity3d&p=assetpipeline/bundleassets/assetbundles
 bundle:assetbundles/generated/standalonewindows64/avatar.sa.unity3d?d=&p=0
 asset:screenpenguinprofiledefinitions/screenpenguinprofileprofile?dl=bundle:sa-bundle&x=asset&b=assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d&p=game/ui/screenpenguin/screenpenguinprofile/assetbundles
 bundle:assetbundles/generated/standalonewindows64/screenpenguinprofileprofile.sa.unity3d?d=&p=0
@@ -16176,5 +16179,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:1d26cece6e890c4214ba251d51ca38c479f46bee
+contentversion:a86ca4172afb97431ca14829392c46a3c72d545c
 contentmanifesthash:
