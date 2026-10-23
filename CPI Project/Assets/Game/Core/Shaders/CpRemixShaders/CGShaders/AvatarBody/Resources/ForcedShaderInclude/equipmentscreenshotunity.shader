@@ -223,10 +223,10 @@ Shader "CpRemix/Equipment Screenshot"
                 float a6 = d6.a * opacity.b;
 
                 float a5Over6 = a5 * (1.0 - a6);
-                float a4Over56 = a4 * (1.0 - a5Over6) * (1.0 - a6);
+                float a4Over56 = a4 * (1.0 - a5) * (1.0 - a6);
                 float coverage456 = min(a6 + a5Over6 + a4Over56, 1.0);
                 float coverage123 = min(a1 + a2 + a3, 1.0);
-                float coverage = min(coverage123 + coverage456, 1.0);
+                float coverage = coverage456 + coverage123 * (1.0 - coverage456);
                 float3 color123 =
                     d1.rgb * _Decal1Color.rgb * a1 +
                     d2.rgb * _Decal2Color.rgb * a2 +
@@ -235,8 +235,7 @@ Shader "CpRemix/Equipment Screenshot"
                     d4.rgb * _Decal4Color.rgb * a4Over56 +
                     d5.rgb * _Decal5Color.rgb * a5Over6 +
                     d6.rgb * _Decal6Color.rgb * a6;
-                float3 decalColor = color456 * coverage456 + color123 * (1.0 - coverage456);
-                float3 baseColor = SAMPLE_TEXTURE2D(_Diffuse, sampler_Diffuse, input.uv).rgb * (1.0 - coverage) + decalColor * coverage;
+                float3 baseColor = SAMPLE_TEXTURE2D(_Diffuse, sampler_Diffuse, input.uv).rgb * (1.0 - coverage) + color456 + color123 * (1.0 - coverage456);
 
                 float4 bodyMask = SAMPLE_TEXTURE2D(_BodyColorsMaskTex, sampler_BodyColorsMaskTex, input.uv);
                 float bodyAlpha = max(bodyMask.r, max(bodyMask.g, bodyMask.b));
