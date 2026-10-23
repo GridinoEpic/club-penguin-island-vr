@@ -873,6 +873,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - avatar.sa.unity3d.txt
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28c6f0a6f089f5f4ea98f719f2b854e0
+    m_Address: assets/assetpipeline/bundleassets/assetbundles/avatar/equipment/scarf/scarf_icon.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - avatar.sa.unity3d.txt
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 292f09fb08b62da4a937ef07f77fd89c
     m_Address: assets/assetpipeline/bundleassets/assetbundles/decals/fabric_dotm_pattern8.png
     m_ReadOnly: 0

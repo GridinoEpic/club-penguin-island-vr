@@ -1852,6 +1852,11 @@ MonoBehaviour:
     - SlotIndex: 8
       PartType: 0
       Required: 1
+  - Name: scarf
+    Parts:
+    - SlotIndex: 8
+      PartType: 2
+      Required: 1
   - Name: scroogesjacket
     Parts:
     - SlotIndex: 4
