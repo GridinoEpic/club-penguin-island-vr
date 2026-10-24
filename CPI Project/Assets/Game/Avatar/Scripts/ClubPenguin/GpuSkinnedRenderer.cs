@@ -24,6 +24,8 @@ namespace ClubPenguin
 
 		private Transform[] m_Bones;
 
+		public Transform[] Bones => m_Bones;
+
 		private BindPose[] m_BindPose;
 
 		private Vector4[] m_BonesQuat;

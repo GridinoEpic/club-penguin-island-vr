@@ -95,16 +95,19 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			case TouchPhase.Stationary:
 				break;
 			case TouchPhase.Ended:
+				if (touch.worldRay.HasValue) onDrag(touch.position, touch.worldRay, touch.uiTarget != null);
+				onDragEnd();
+				break;
 			case TouchPhase.Canceled:
 				onDragEnd();
 				break;
 			case TouchPhase.Moved:
-				onDrag(touch.position);
+				onDrag(touch.position, touch.worldRay, touch.worldRay.HasValue && touch.uiTarget != null);
 				break;
 			}
 		}
 
-		protected void onDrag(Vector2 touchPosition)
+		protected void onDrag(Vector2 touchPosition, Ray? worldRay = null, bool blockedByUi = false)
 		{
 			if (dragContainer == null)
 			{
@@ -123,9 +126,9 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			{
 				v += DragIconOffset * ((float)Screen.height / num);
 			}
-			Ray ray = mainCamera.ScreenPointToRay(v);
+			Ray ray = worldRay ?? mainCamera.ScreenPointToRay(v);
 			RaycastHit hitInfo;
-			if (Physics.Raycast(ray, out hitInfo))
+			if (!blockedByUi && (worldRay.HasValue ? RaycastClothing(ray, out hitInfo) : Physics.Raycast(ray, out hitInfo)))
 			{
 				GameObject gameObject2 = hitInfo.collider.gameObject;
 				SkinnedMeshRenderer component = gameObject2.GetComponent<SkinnedMeshRenderer>();
@@ -287,8 +290,10 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 		protected void setRelativeIconPostion(Vector2 screenPosition)
 		{
 			RectTransform rectTransform = dragContainer.transform as RectTransform;
+			Canvas canvas = dragContainer.GetComponentInParent<Canvas>();
+			Camera eventCamera = canvas != null && canvas.renderMode == RenderMode.WorldSpace ? canvas.worldCamera : guiCamera;
 			Vector2 localPoint;
-			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, guiCamera, out localPoint);
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, eventCamera, out localPoint);
 			rectTransform.position = rectTransform.TransformPoint(localPoint);
 		}
 	}

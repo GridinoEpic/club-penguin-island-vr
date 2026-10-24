@@ -10,6 +10,8 @@ using Disney.MobileNetwork;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 namespace ClubPenguin
 {
@@ -31,6 +33,10 @@ namespace ClubPenguin
 		private GameObjectPool worldSpeechBubblePool;
 
 		private Transform cameraTransform;
+
+		private Canvas worldChatCanvas;
+
+		private bool xrWorldCanvasConfigured;
 
 		private bool ignoreRemoteChat;
 
@@ -67,6 +73,7 @@ namespace ClubPenguin
 		protected override void startInit()
 		{
 			worldSpeechBubblePool = GameObject.Find("Pool[WorldSpeechBubble]").GetComponent<GameObjectPool>();
+			worldChatCanvas = GetComponent<Canvas>();
 			cameraTransform = Camera.main.transform;
 			eventChannel = new EventChannel(Service.Get<EventDispatcher>());
 			eventChannel.AddListener<ChatMessageSender.SendChatMessage>(onSendChatMessage);
@@ -92,6 +99,20 @@ namespace ClubPenguin
 
 		private void Update()
 		{
+			Camera mainCamera = Camera.main;
+			if (mainCamera != null)
+			{
+				cameraTransform = mainCamera.transform;
+				if (XRSettings.enabled)
+				{
+					ConfigureWorldCanvasForVr(mainCamera);
+					if (xrWorldCanvasConfigured)
+					{
+						worldChatCanvas.worldCamera = mainCamera;
+					}
+				}
+			}
+
 			updateSizzleProp();
 			updateRemoteSizzleProps();
 			updatePendingRemoteSizzles();
@@ -103,14 +124,34 @@ namespace ClubPenguin
 				{
 					AvatarView component2 = avatar.GetComponent<AvatarView>();
 					Vector3 position = avatar.position;
-					position.y += component2.GetBounds().extents.y * Offset;
+					float vrHeightMultiplier = xrWorldCanvasConfigured ? 0.5f : 1f;
+					position.y += component2.GetBounds().extents.y * Offset * vrHeightMultiplier;
 					if (isWithinViewport(position))
 					{
 						if (!activeSpeechBubble.Value.IsActive)
 						{
 							activeSpeechBubble.Value.SetActive(true);
 						}
-						component.anchoredPosition = getScreenPoint(position);
+						if (xrWorldCanvasConfigured)
+						{
+							component.position = position;
+							// Screen-space UI faces along the canvas forward axis. Keep that axis
+							// pointed away from the camera so the readable side faces the player.
+							Vector3 facing = Vector3.ProjectOnPlane(position - cameraTransform.position, Vector3.up).normalized;
+							if (facing.sqrMagnitude < 0.001f)
+							{
+								facing = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
+							}
+							if (facing.sqrMagnitude < 0.001f)
+							{
+								facing = Vector3.forward;
+							}
+							component.rotation = Quaternion.LookRotation(facing, Vector3.up);
+						}
+						else
+						{
+							component.anchoredPosition = getScreenPoint(position);
+						}
 						setSpeechBubbleScale(activeSpeechBubble.Value, avatar);
 					}
 					else if (activeSpeechBubble.Value.IsActive)
@@ -120,6 +161,35 @@ namespace ClubPenguin
 					}
 				}
 			}
+		}
+
+		private void ConfigureWorldCanvasForVr(Camera mainCamera)
+		{
+			if (xrWorldCanvasConfigured || worldChatCanvas == null)
+			{
+				return;
+			}
+
+			RectTransform canvasRect = worldChatCanvas.GetComponent<RectTransform>();
+			if (canvasRect == null)
+			{
+				return;
+			}
+
+			worldChatCanvas.renderMode = RenderMode.WorldSpace;
+			worldChatCanvas.worldCamera = mainCamera;
+			worldChatCanvas.overrideSorting = true;
+			canvasRect.SetParent(null, true);
+			canvasRect.position = Vector3.zero;
+			canvasRect.rotation = Quaternion.identity;
+			canvasRect.localScale = Vector3.one * 0.001f;
+			CanvasScaler scaler = worldChatCanvas.GetComponent<CanvasScaler>();
+			if (scaler != null)
+			{
+				scaler.enabled = false;
+			}
+			xrWorldCanvasConfigured = true;
+			Debug.Log("CPI PCVR: converted the world-chat canvas to world space so speech bubbles render in the headset and can follow their penguins.");
 		}
 
 		private void setSpeechBubbleScale(WorldSpeechBubble bubble, Transform avatarTransform)

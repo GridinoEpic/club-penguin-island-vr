@@ -33,6 +33,10 @@ namespace ClubPenguin.ClothingDesigner
 		private void Awake()
 		{
 			animator = GetComponent<Animator>();
+            // This is a visual carried by the pointer, never a drop target.
+            foreach (Graphic graphic in GetComponentsInChildren<Graphic>(true)) graphic.raycastTarget = false;
+            CanvasGroup group = GetComponent<CanvasGroup>();
+            if (group != null) group.blocksRaycasts = false;
 		}
 
 		private void Start()

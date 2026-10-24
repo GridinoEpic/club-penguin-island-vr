@@ -20,8 +20,51 @@ namespace ClubPenguin.UI
 		public void PositionConfirmation(RectTransform shopItem, RectTransform scrollRectTransform)
 		{
 			this.scrollRectTransform = scrollRectTransform;
-			setConfirmationPosition(shopItem);
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null && canvas.rootCanvas.renderMode == RenderMode.WorldSpace)
+                SetWorldCanvasPosition(shopItem);
+            else setConfirmationPosition(shopItem);
 		}
+
+        private void SetWorldCanvasPosition(RectTransform shopItem)
+        {
+            // Shop geometry is expressed in canvas units, not screen pixels or
+            // world X/Y. Keep the purchase button inside the rotated scroll panel.
+            RectTransform parent = (RectTransform)transform.parent;
+            RectTransform confirmation = (RectTransform)transform;
+            Bounds item = RectTransformUtility.CalculateRelativeRectTransformBounds(parent, shopItem);
+            Vector3[] corners = new Vector3[4];
+            scrollRectTransform.GetWorldCorners(corners);
+            Vector3 min = parent.InverseTransformPoint(corners[0]);
+            Vector3 max = min;
+            foreach (Vector3 corner in corners)
+            {
+                Vector3 local = parent.InverseTransformPoint(corner);
+                min = Vector3.Min(min, local);
+                max = Vector3.Max(max, local);
+            }
+            float width = confirmation.rect.width * Mathf.Abs(confirmation.localScale.x);
+            float height = confirmation.rect.height * Mathf.Abs(confirmation.localScale.y);
+            float left = width * confirmation.pivot.x;
+            float right = width - left;
+            float bottom = height * confirmation.pivot.y;
+            float top = height - bottom;
+            float y = item.min.y - yPadding - top;
+            if (y - bottom < min.y) y = item.max.y + yPadding + bottom;
+            float x = Mathf.Clamp(item.center.x, min.x + left, Mathf.Max(min.x + left, max.x - right));
+            y = Mathf.Clamp(y, min.y + bottom, Mathf.Max(min.y + bottom, max.y - top));
+            confirmation.localPosition = new Vector3(x, y, parent.InverseTransformPoint(shopItem.position).z);
+            bool below = y < item.center.y;
+            if (topPointer != null) topPointer.enabled = below;
+            if (bottomPointer != null) bottomPointer.enabled = !below;
+            Image pointer = below ? topPointer : bottomPointer;
+            if (pointer != null)
+            {
+                Vector3 position = pointer.transform.localPosition;
+                position.x = (item.center.x - x) / Mathf.Max(0.0001f, Mathf.Abs(confirmation.localScale.x));
+                pointer.transform.localPosition = position;
+            }
+        }
 
 		private void setConfirmationPosition(RectTransform shopItem)
 		{

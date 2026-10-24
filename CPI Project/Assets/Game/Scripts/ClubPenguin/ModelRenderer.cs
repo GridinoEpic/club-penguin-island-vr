@@ -80,15 +80,14 @@ namespace ClubPenguin
 			iconRenderLayer = LayerMask.NameToLayer("IconRender");
 			previousParent = config.ObjectToRenderTransform.parent;
 			modelRendererTransform = createModelRenderGameObject();
-			renderCamera = createCamera();
 			renderTexture = createRenderTexture();
 			renderTexture.name = "Model Render Texture: " + config.ObjectToRenderTransform.name;
+			renderCamera = createCamera();
 			positionObjectToRender();
 			if (config.FrameObjectInCamera)
 			{
 				placeObjectSoItIsVisibleInCamera();
 			}
-			renderCamera.targetTexture = renderTexture;
 			renderCamera.Render();
 			modelRendererCount++;
 		}
@@ -155,6 +154,9 @@ namespace ClubPenguin
 			gameObject.name = "ModelRenderCamera";
 			gameObject.layer = iconRenderLayer;
 			Camera camera = gameObject.AddComponent<Camera>();
+			// Set the target before projection settings so XR treats this as an
+			// offscreen model-preview camera, not the headset's main view.
+			camera.targetTexture = renderTexture;
 			camera.aspect = config.TextureDimensions.x / config.TextureDimensions.y;
 			camera.clearFlags = CameraClearFlags.Color;
 			camera.backgroundColor = new Color(1f, 1f, 1f, 0f);

@@ -5,6 +5,7 @@
         "Accessibility",
         "Core",
         "Foundation",
+		"Tutorial",
         "UI",
         "UnityShared",
         "Unity.TextMeshPro"

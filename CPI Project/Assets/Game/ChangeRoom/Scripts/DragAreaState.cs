@@ -13,6 +13,9 @@ namespace ClubPenguin.ClothingDesigner
             public Vector2 position;
             public Vector2 deltaPosition;
             public int tapCount;
+            // World-space controller input must retain its ray and actual UI hit.
+            public Ray? worldRay;
+            public GameObject uiTarget;
 
             private static Vector3 lastPosition;
             private static float lastClick;
@@ -126,6 +129,29 @@ namespace ClubPenguin.ClothingDesigner
         }
 
         public abstract void ExitState();
+
+        public void ProcessPointerTouch(ITouch touch)
+        {
+            ProcessOneTouch(touch);
+        }
+
+        public static bool RaycastClothing(Ray ray, out RaycastHit clothingHit)
+        {
+            foreach (var child in Object.FindObjectsByType<ItemCustomizer.CustomizerChild>(FindObjectsSortMode.None))
+                child.RefreshColliderPose();
+            clothingHit = default;
+            float nearest = float.PositiveInfinity;
+            // Scenery and the penguin's body are not clothing drop targets.
+            foreach (RaycastHit hit in Physics.RaycastAll(ray, 10f))
+            {
+                var renderer = hit.collider.GetComponent<SkinnedMeshRenderer>();
+                if (renderer == null || renderer.sharedMaterial == null ||
+                    !renderer.sharedMaterial.shader.name.Contains("Equipment") || hit.distance >= nearest) continue;
+                clothingHit = hit;
+                nearest = hit.distance;
+            }
+            return nearest < float.PositiveInfinity;
+        }
 
         protected virtual void ProcessOneTouch(ITouch touch)
         {

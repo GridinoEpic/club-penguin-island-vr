@@ -74,6 +74,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 
 		private void OnDestroy()
 		{
+			if (dispatcher == null) return;
 			dispatcher.RemoveListener<JigsawEvents.AllPiecesSolved>(onAllPiecesSolved);
 		}
 
@@ -137,8 +138,9 @@ namespace ClubPenguin.MiniGames.Jigsaw
 		{
 			if (!isLocked)
 			{
-				newPos.z = base.gameObject.transform.position.z;
-				base.gameObject.transform.position = newPos;
+				Transform puzzle = GetComponentInParent<JigsawController>().transform;
+                newPos.z = puzzle.InverseTransformPoint(transform.position).z;
+				base.gameObject.transform.position = puzzle.TransformPoint(newPos);
 				if (shadowObj != null)
 				{
 					shadowObj.SetActive(shadowEnabled);

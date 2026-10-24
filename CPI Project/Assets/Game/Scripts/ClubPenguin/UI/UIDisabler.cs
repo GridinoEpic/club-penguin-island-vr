@@ -51,6 +51,7 @@ namespace ClubPenguin.UI
 		private bool resetOnDestroy = true;
 
 		private int previousCameraCullingMask;
+		private bool cameraWasCulled;
 
 		public bool ResetOnDestroy
 		{
@@ -299,11 +300,14 @@ namespace ClubPenguin.UI
 
 		private IEnumerator cullCamera()
 		{
+			// VR popups are world-space graphics rendered by this same camera.
+			if (UnityEngine.XR.XRSettings.enabled) yield break;
 			if (Camera.main != null)
 			{
 				previousCameraCullingMask = Camera.main.cullingMask;
 				yield return new WaitForSeconds(1f);
 				CameraCullingMaskHelper.HideAllLayers(Camera.main);
+				cameraWasCulled = true;
 				Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.CameraCullingStateChanged(false));
 			}
 			else
@@ -314,6 +318,8 @@ namespace ClubPenguin.UI
 
 		private void restoreCamera()
 		{
+			if (!cameraWasCulled) return;
+			cameraWasCulled = false;
 			if (Camera.main != null)
 			{
 				Camera.main.cullingMask = previousCameraCullingMask;

@@ -46,6 +46,11 @@ namespace ClubPenguin
 			}
 		}
 
+		public bool CanClickToClose
+		{
+			get { return clickToClose && isOpen; }
+		}
+
 		private void Awake()
 		{
 			animator = GetComponent<Animator>();

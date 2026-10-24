@@ -17,9 +17,26 @@ namespace ClubPenguin.Adventure
 		public ETouchType TouchType = ETouchType.UP;
 
 		public FsmEvent FinishEvent;
+        private static uint vrDownSequence;
+        private static uint vrUpSequence;
+        private uint vrDownAtEnter = vrDownSequence;
+        private uint vrUpAtEnter = vrUpSequence;
+
+        public static void NotifyVrPointerPress(bool down, bool up)
+        {
+            if (down) vrDownSequence++;
+            if (up) vrUpSequence++;
+        }
+
+        private bool HasVrPress()
+        {
+            return TouchType == ETouchType.DOWN ? vrDownSequence != vrDownAtEnter : vrUpSequence != vrUpAtEnter;
+        }
 
 		public override void OnEnter()
 		{
+            vrDownAtEnter = vrDownSequence;
+            vrUpAtEnter = vrUpSequence;
 			CoroutineRunner.Start(waitForPress(), this, "");
 		}
 
@@ -52,7 +69,7 @@ namespace ClubPenguin.Adventure
 
 		private bool hasPressedDown()
 		{
-			bool flag = InputWrapper.GetMouseButtonDown(0);
+			bool flag = (UnityEngine.XR.XRSettings.enabled && HasVrPress()) || InputWrapper.GetMouseButtonDown(0);
 			if (UnityEngine.Input.touchSupported && !flag)
 			{
 				flag = (InputWrapper.touchCount > 0 && InputWrapper.GetTouch(0).phase == TouchPhase.Began);
@@ -62,7 +79,7 @@ namespace ClubPenguin.Adventure
 
 		private bool hasPressedUp()
 		{
-			bool flag = InputWrapper.GetMouseButtonUp(0);
+			bool flag = (UnityEngine.XR.XRSettings.enabled && HasVrPress()) || InputWrapper.GetMouseButtonUp(0);
 			if (UnityEngine.Input.touchSupported && !flag)
 			{
 				flag = (InputWrapper.touchCount > 0 && InputWrapper.GetTouch(0).phase == TouchPhase.Ended);

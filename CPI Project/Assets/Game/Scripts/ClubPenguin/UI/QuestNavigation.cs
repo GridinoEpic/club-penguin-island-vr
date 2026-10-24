@@ -145,6 +145,12 @@ namespace ClubPenguin.UI
 
 		private void updateIndicatorTransform()
 		{
+			Canvas canvas = GetComponentInParent<Canvas>();
+			if (canvas != null && canvas.rootCanvas.renderMode == RenderMode.WorldSpace)
+			{
+				updateWorldSpaceIndicatorTransform(canvas.rootCanvas.worldCamera != null ? canvas.rootCanvas.worldCamera : Camera.main);
+				return;
+			}
 			Vector3 viewportPos = Camera.main.WorldToViewportPoint(targetTransform.position);
 			bool snap = false;
 			if (viewportPos.x < 0f || viewportPos.x > 1f || viewportPos.y < 0.11f || viewportPos.y > 1f || viewportPos.z < 0f)
@@ -166,6 +172,79 @@ namespace ClubPenguin.UI
 				updateOnscreenIndicatorTransform();
 			}
 			applyDesiredIndicatorTransform(snap);
+		}
+
+		// Called after the VR bridge has applied the latest head pose and HUD pose.
+		public void RefreshWorldSpaceIndicator()
+		{
+			if (worldContainerRect != null && targetTransform != null && currentState != QuestNavigationState.inactive)
+			{
+				updateIndicatorTransform();
+			}
+		}
+
+		private void updateWorldSpaceIndicatorTransform(Camera camera)
+		{
+			if (camera == null) return;
+			Vector3 target = targetTransform.position + OnscreenIndicatorOffset + customOnscreenIndicatorOffset;
+			Vector3 eye = worldContainerRect.InverseTransformPoint(camera.transform.position);
+			Vector3 direction = worldContainerRect.InverseTransformPoint(target) - eye;
+			// Intersect the eye-to-target ray with the actual UI plane. Viewport fractions
+			// are not coordinates on a world-space canvas, especially when looking up/down.
+			float distanceToPlane = -eye.z;
+			bool inFront = direction.z * distanceToPlane > 0f;
+			float projection = Mathf.Abs(distanceToPlane) / Mathf.Max(0.0001f, Mathf.Abs(direction.z));
+			Vector2 point = new Vector2(eye.x + direction.x * projection, eye.y + direction.y * projection);
+			Rect rect = worldContainerRect.rect;
+			float left = rect.xMin + rect.width * PADDING_LEFT;
+			float right = rect.xMax - rect.width * PADDING_RIGHT;
+			float bottom = rect.yMin + rect.height * PADDING_BOTTOM;
+			float top = rect.yMax - rect.height * PADDING_TOP;
+			// The HUD occupies only part of the headset view. A nearby objective
+			// must not turn into an edge dot just because its raised arrow crosses
+			// the HUD boundary. Classify the objective itself using the eye view,
+			// then keep its marker inside the readable panel area.
+			Vector3 viewport = camera.WorldToViewportPoint(targetTransform.position);
+			bool onPanel = inFront && viewport.z > 0f && viewport.x >= 0f && viewport.x <= 1f &&
+				viewport.y >= 0f && viewport.y <= 1f;
+			setState(onPanel ? QuestNavigationState.onscreen : QuestNavigationState.offscreen);
+			if (onPanel)
+			{
+				point.x = Mathf.Clamp(point.x, left, right);
+				point.y = Mathf.Clamp(point.y, bottom, top);
+				desiredIndicatorRot = Quaternion.identity;
+			}
+			else
+			{
+				Vector2 heading = point - rect.center;
+				if (heading.sqrMagnitude < 0.0001f) heading = Vector2.down;
+				desiredIndicatorRot = Quaternion.Euler(0f, 0f, Mathf.Atan2(heading.y, heading.x) * Mathf.Rad2Deg - 90f);
+				float horizontal = heading.x > 0f ? (right - rect.center.x) / heading.x :
+					heading.x < 0f ? (left - rect.center.x) / heading.x : float.PositiveInfinity;
+				float vertical = heading.y > 0f ? (top - rect.center.y) / heading.y :
+					heading.y < 0f ? (bottom - rect.center.y) / heading.y : float.PositiveInfinity;
+				point = rect.center + heading * Mathf.Min(horizontal, vertical);
+			}
+			// Account for the position transform's parent, anchors and pivot.
+			RectTransform parent = (RectTransform)TransformPosition.parent;
+			Vector3 localPoint = parent.InverseTransformPoint(worldContainerRect.TransformPoint(new Vector3(point.x, point.y, 0f)));
+			Vector2 anchor = TransformPosition.anchorMin + Vector2.Scale(TransformPosition.anchorMax - TransformPosition.anchorMin, TransformPosition.pivot);
+			Vector2 anchorPosition = parent.rect.min + Vector2.Scale(parent.rect.size, anchor);
+			desiredIndicatorPos = new Vector2(localPoint.x, localPoint.y) - anchorPosition;
+			// Head movement must not leave the marker trailing behind its objective.
+			applyDesiredIndicatorTransform(true);
+			if (TransformDerotation != null) TransformDerotation.rotation = worldContainerRect.rotation;
+			GameObject player = SceneRefs.ZoneLocalPlayerManager != null ? SceneRefs.ZoneLocalPlayerManager.LocalPlayerGameObject : null;
+			float distance = Vector3.Distance(targetTransform.position, player != null ? player.transform.position : camera.transform.position);
+			Text label = (onPanel ? OnScreenGO : OffScreenGO).GetComponentInChildren<Text>(true);
+			if (label != null)
+			{
+				label.text = string.Format("{0}m", (int)distance);
+				float alpha = onPanel ? Mathf.InverseLerp(DIST_TEXT_FADE_END_DIST, DIST_TEXT_FADE_START_DIST, distance) : 1f;
+				label.color = new Color(1f, 1f, 1f, alpha);
+			}
+			float scale = Mathf.Max(MIN_ARROW_SCALE, 1f - Vector3.Distance(targetTransform.position, camera.transform.position) / ARROW_SCALE_DIST);
+			OnScreenGO.transform.localScale = new Vector3(scale, scale, 1f);
 		}
 
 		private Vector2 calcDesiredScreenOffset()

@@ -15,6 +15,7 @@ namespace ClubPenguin.Actions
 
 		protected override void Update()
 		{
+			PCVRFirstPersonController.SetShopAnchorFromInteraction(Owner);
 			PrefabContentKey prefabContentKey = new PrefabContentKey(PopupContentPath);
 			SceneRefs.FullScreenPopupManager.CreatePopup(prefabContentKey, null);
 			Completed();

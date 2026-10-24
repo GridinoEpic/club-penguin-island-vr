@@ -19,6 +19,7 @@ namespace ClubPenguin.Actions
 
 		protected override void Update()
 		{
+			PCVRFirstPersonController.SetShopAnchorFromInteraction(Owner);
 			Content.LoadAsync<GameObject>(PopupContentPath, onPopupLoadComplete);
 			Completed();
 		}

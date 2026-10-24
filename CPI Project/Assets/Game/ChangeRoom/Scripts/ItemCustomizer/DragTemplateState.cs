@@ -63,7 +63,10 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 		private void onDragEnd(ITouch touch)
 		{
 			dragContainer.Hide();
-			if (touch.position.y > (float)Screen.height * mainCamera.rect.y)
+			bool overPreview = touch.worldRay.HasValue
+				? touch.uiTarget == null && Physics.Raycast(touch.worldRay.Value, out RaycastHit hit) && hit.collider.GetComponent<SkinnedMeshRenderer>() != null
+				: touch.position.y > (float)Screen.height * mainCamera.rect.y;
+			if (overPreview)
 			{
 				CustomizationContext.EventBus.DispatchEvent(new CustomizerUIEvents.SelectTemplate(templateData, dragContainer.GetSprite()));
 			}
@@ -85,8 +88,10 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 		protected void setRelativeIconPostion(Vector2 screenPosition)
 		{
 			RectTransform rectTransform = dragContainer.transform as RectTransform;
+			Canvas canvas = dragContainer.GetComponentInParent<Canvas>();
+			Camera eventCamera = canvas != null && canvas.renderMode == RenderMode.WorldSpace ? canvas.worldCamera : guiCamera;
 			Vector2 localPoint;
-			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, guiCamera, out localPoint);
+			RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, eventCamera, out localPoint);
 			rectTransform.position = rectTransform.TransformPoint(localPoint);
 		}
 	}

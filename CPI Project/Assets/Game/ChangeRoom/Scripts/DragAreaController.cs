@@ -191,11 +191,60 @@ namespace ClubPenguin.ClothingDesigner
 
 		public void Update()
 		{
-			if (currentState != null && isUpdateEnabled)
+			if (currentState != null && isUpdateEnabled && !UnityEngine.XR.XRSettings.enabled)
 			{
 				currentState.UpdateState();
 			}
 		}
+
+        private int? vrPointerOwner;
+        private Vector2 vrPointerPosition;
+
+        public bool ProcessVrPointer(int pointerId, Ray ray, GameObject uiTarget,
+            Vector2 screenPosition, bool pressed, bool held, bool released)
+        {
+            uiTarget = GetVrCustomizationUiTarget(uiTarget);
+            if (currentState == null || !isUpdateEnabled) { vrPointerOwner = null; return false; }
+            if (!vrPointerOwner.HasValue)
+            {
+                // Standard UI controls keep their normal EventSystem handling.
+                if (!pressed || currentState != noSelectionState) return false;
+                var button = uiTarget != null ? uiTarget.GetComponentInParent<CustomizationButton>() : null;
+                bool clothingHit = uiTarget == null && DragAreaState.RaycastClothing(ray, out RaycastHit hit);
+                if ((button == null || !button.CanDrag || button.GetTexture == null) && !clothingHit) return false;
+                vrPointerOwner = pointerId;
+                vrPointerPosition = screenPosition;
+            }
+            if (vrPointerOwner.Value != pointerId) return true;
+            var touch = new DragAreaState.ITouch
+            {
+                phase = pressed ? TouchPhase.Began : released ? TouchPhase.Ended : held ? TouchPhase.Moved : TouchPhase.Canceled,
+                position = screenPosition,
+                deltaPosition = screenPosition - vrPointerPosition,
+                worldRay = ray,
+                uiTarget = uiTarget
+            };
+            vrPointerPosition = screenPosition;
+            var previousState = currentState;
+            currentState.ProcessPointerTouch(touch);
+            // The first movement switches states; also preview the drop in that frame.
+            if (touch.phase == TouchPhase.Moved && currentState != previousState)
+                currentState.ProcessPointerTouch(touch);
+            if (released || !held) vrPointerOwner = null;
+            return true;
+        }
+
+        public static GameObject GetVrCustomizationUiTarget(GameObject target)
+        {
+            if (target == null || target.GetComponentInParent<DragContainer>(true) != null) return null;
+            if (target.GetComponentInParent<CustomizationButton>(true) != null ||
+                target.GetComponentInParent<UnityEngine.UI.Selectable>(true) != null ||
+                UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(target) != null ||
+                UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerDownHandler>(target) != null ||
+                UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IDragHandler>(target) != null ||
+                target.CompareTag("RaycastBlockingUI")) return target;
+            return null;
+        }
 
 		private bool onItemModelReset(CustomizerModelEvents.ResetItemModelEvent evt)
 		{

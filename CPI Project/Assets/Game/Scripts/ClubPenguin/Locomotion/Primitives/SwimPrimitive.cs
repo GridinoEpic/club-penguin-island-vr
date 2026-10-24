@@ -189,6 +189,7 @@ namespace ClubPenguin.Locomotion.Primitives
 
 		public override void Steer(Vector3 wsSteerInput)
 		{
+			stickMagnitude = Mathf.Clamp01(wsSteerInput.magnitude);
 			Vector3 _wsUpDir = LocomotionUtils.GetUpVector(ref wsSteerInput, (!IsInShallowWater) ? LocomotionUtils.AxisIndex.Y : LocomotionUtils.AxisIndex.Z);
 			applyWorldSpaceSteering(ref wsSteerInput, ref _wsUpDir);
 		}

@@ -18,7 +18,8 @@ namespace ClubPenguin.Marketplace
 		{
 			   if (sender.CompareTag("Player") && !isLoadingPrefab && Object.FindFirstObjectByType<MarketplaceScreenController>() == null)
 			{
-				isLoadingPrefab = true;
+				PCVRFirstPersonController.SetShopAnchor(transform, sender.transform);
+                isLoadingPrefab = true;
 				SceneRefs.FullScreenPopupManager.CreatePopup(prefabContentKey, "Accessibility.Popup.Title.Marketplace", false, onPrefabCreated);
 			}
 		}

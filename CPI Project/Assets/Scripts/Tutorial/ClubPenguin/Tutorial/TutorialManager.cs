@@ -94,6 +94,15 @@ namespace ClubPenguin.Tutorial
 			}
 		}
 
+		// Gameplay can complete a tutorial through controller input without
+		// clicking the desktop button its FSM listens for.
+		public bool EndTutorial(int tutorialId)
+		{
+			if (currentTutorial == null || currentTutorial.Id != tutorialId) return false;
+			EndTutorial();
+			return true;
+		}
+
 		public void SetTutorial(int tutorialID, bool isComplete)
 		{
 			if (getTutorialData() != null)
@@ -169,6 +178,8 @@ namespace ClubPenguin.Tutorial
 				currentTutorial = tutorial;
 				Content.LoadAsync(delegate(string path, FsmTemplate fsm)
 				{
+					// Gameplay may already have completed the tutorial while loading.
+					if (currentTutorial != tutorial) return;
 					onLoadFSMComplete(fsm, sceneNameToRunTutorial);
 				}, tutorial.FsmContentKey);
 			}

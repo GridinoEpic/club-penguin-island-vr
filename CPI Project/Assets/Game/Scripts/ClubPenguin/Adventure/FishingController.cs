@@ -59,6 +59,10 @@ namespace ClubPenguin.Adventure
 
 		public static bool IsActiveFishing { get; private set; } = false;
 
+		public static Transform HeldPrize { get; private set; }
+
+		private const float VR_PRIZE_SCALE = 0.35f;
+
 		[SerializeField]
 		private FishingGameConfig config;
 
@@ -743,6 +747,7 @@ namespace ClubPenguin.Adventure
 			}
 			else if (_gameplayState == FishingGameplayStates.Reel)
 			{
+				CloseFishingTutorial();
 				float num = config.baseFishReelStrength * _fishes[_reelFishIndex].reelStrength;
 				_reelValue += Time.deltaTime * num;
 				if (_reelValue >= config.reelExtremes.y)
@@ -1009,6 +1014,7 @@ namespace ClubPenguin.Adventure
 
 		private void reelIn(FishingFish fish)
 		{
+			CloseFishingTutorial();
 			eventDispatcher.RemoveListener<InputEvents.ActionEvent>(onActionEvent);
 			eventDispatcher.DispatchEvent(default(FishingEvents.DeactivateBobberButton));
 			clickListener.OnClicked -= onScreenClicked;
@@ -1095,11 +1101,24 @@ namespace ClubPenguin.Adventure
 
 		private void parentPrizeDropToAnimator()
 		{
+			if (prizeGameObject == null)
+			{
+				// The prize asset can still be loading when the reel animation ends.
+				Invoke("parentPrizeDropToAnimator", 0.1f);
+				return;
+			}
 			prizeGameObject.SetActive(true);
-			prizeGameObject.transform.SetParent(prizeDropContainerAnimator.transform, false);
+			GameObject leftWrist = PCVRFirstPersonController.OwnsMovement
+				? getChildByNameRecursive(player, "l_wrist_jnt") : null;
+			prizeGameObject.transform.SetParent(leftWrist != null ? leftWrist.transform : prizeDropContainerAnimator.transform, false);
 			prizeGameObject.transform.localPosition = Vector3.zero;
 			prizeGameObject.transform.localEulerAngles = Vector3.zero;
-			prizeDropContainerAnimator.SetTrigger("FishingRewardDrop");
+			if (leftWrist != null)
+			{
+				prizeGameObject.transform.localScale *= VR_PRIZE_SCALE;
+				HeldPrize = prizeGameObject.transform;
+			}
+			if (leftWrist == null) prizeDropContainerAnimator.SetTrigger("FishingRewardDrop");
 			fishingRodAnimator.enabled = true;
 			Invoke("celebratePrizeCaughtAnimation", config.CelebrateDelay);
 		}
@@ -1138,6 +1157,8 @@ namespace ClubPenguin.Adventure
 
 		private void finishMinigame()
 		{
+			CloseFishingTutorial();
+			CancelInvoke();
 			IsActiveFishing = false;
 			if (fishingRod != null)
 			{
@@ -1186,6 +1207,12 @@ namespace ClubPenguin.Adventure
 			}
 		}
 
+		private void CloseFishingTutorial()
+		{
+			if (TutorialDefinition != null && Service.Get<TutorialManager>().EndTutorial(TutorialDefinition.Id))
+				eventDispatcher.DispatchEvent(default(ClubPenguin.TutorialUI.TutorialUIEvents.HideHighlightOverlay));
+		}
+
 		private void resetCameraToPenguin()
 		{
 			sendCameraEvent(cinematicCameraFishingController);
@@ -1203,6 +1230,7 @@ namespace ClubPenguin.Adventure
 		{
 			if (prizeGameObject != null)
 			{
+				if (HeldPrize == prizeGameObject.transform) HeldPrize = null;
 				UnityEngine.Object.Destroy(prizeGameObject);
 			}
 		}

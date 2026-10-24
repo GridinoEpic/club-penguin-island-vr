@@ -28,6 +28,8 @@ namespace ClubPenguin.UI
 
 		private float screenHeight = -1f;
 
+		private float lastVrOpenHeight = -1f;
+
 		private GameObject containerBG;
 
 		private bool isOpen;
@@ -128,6 +130,31 @@ namespace ClubPenguin.UI
 			layoutElementTweener.Init(canvasRectTransform.rect.height * DEFAULT_HEIGHT, 0f);
 		}
 
+		private void LateUpdate()
+		{
+			if (!UnityEngine.XR.XRSettings.enabled || canvasRectTransform == null ||
+				layoutElementTweener == null || IsKeyboardShown || layoutElementTweener.IsTransitioning)
+			{
+				return;
+			}
+			Canvas canvas = canvasRectTransform.GetComponent<Canvas>();
+			if (canvas == null || canvas.renderMode != RenderMode.WorldSpace) return;
+
+			float openHeight = canvasRectTransform.rect.height * DEFAULT_HEIGHT;
+			if (GetComponentInChildren<QuestsAdventuresStateHandler>() != null)
+			{
+				// VR uses a fixed design canvas, so the desktop tray percentage no
+				// longer compensates for CanvasScaler. Keep room for the 262-unit
+				// chapter cards, scrollbar, padding and secondary navigation.
+				openHeight = Mathf.Max(openHeight, 450f);
+			}
+			if (Mathf.Abs(lastVrOpenHeight - openHeight) < 0.1f) return;
+			lastVrOpenHeight = openHeight;
+			layoutElementTweener.Resize(openHeight);
+			if (currentState == ScreenContainerState.Max) layoutElementTweener.SetOpen();
+			else layoutElementTweener.SetClosed();
+		}
+
 		public void OnStateChanged(string newStateString)
 		{
 			ScreenContainerState screenContainerState = (ScreenContainerState)Enum.Parse(typeof(ScreenContainerState), newStateString);
@@ -175,6 +202,7 @@ namespace ClubPenguin.UI
 
 		private void setScreenContainerHeight(float normalizedHeight)
 		{
+			lastVrOpenHeight = -1f;
 			layoutElementTweener.Resize(canvasRectTransform.rect.height * normalizedHeight);
 		}
 

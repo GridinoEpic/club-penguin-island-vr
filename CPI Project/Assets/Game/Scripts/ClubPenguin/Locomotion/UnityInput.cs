@@ -21,6 +21,7 @@ namespace ClubPenguin.Locomotion
 
         public void Update()
         {
+            if (PCVRFirstPersonController.OwnsMovement) return;
             // Replace legacy Input axes with new Input System equivalents
             Vector2 lhs = Vector2.zero;
 

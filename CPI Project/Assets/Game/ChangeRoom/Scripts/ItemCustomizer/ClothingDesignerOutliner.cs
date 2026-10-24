@@ -105,7 +105,8 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			outlineCamera.clearFlags = CameraClearFlags.Color;
 			outlineCamera.backgroundColor = Color.black;
 			bool flag = PlatformUtils.GetPlatformType() == PlatformType.Standalone;
-			MaxRenderTextureSize = (flag ? 4096 : 4096);
+            bool vr = UnityEngine.XR.XRSettings.enabled;
+			MaxRenderTextureSize = vr ? 1024 : 4096;
 			int num2 = MaxRenderTextureSize;
 			int num3 = MaxRenderTextureSize;
 			if (referenceCamera.aspect > 1f)
@@ -116,12 +117,14 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			{
 				num2 = Mathf.RoundToInt((float)num3 * referenceCamera.aspect);
 			}
-			outlineRtt = new RenderTexture(num2, num3, 4096);
-			if (flag)
+			outlineRtt = new RenderTexture(num2, num3, 24);
+			if (flag && !vr)
 			{
 				outlineRtt.antiAliasing = 8;
 			}
 			outlineCamera.targetTexture = outlineRtt;
+            if (vr) outlineCamera.stereoTargetEye = StereoTargetEyeMask.None;
+            outlineCamera.enabled = isActiveAndEnabled;
 			ClothingOutlinerImageEffect component2 = referenceCamera.gameObject.GetComponent<ClothingOutlinerImageEffect>();
 			outlinerEffect = (component2 ?? referenceCamera.gameObject.AddComponent<ClothingOutlinerImageEffect>());
 			outlinerEffect.OutlineTexture = outlineRtt;
@@ -130,6 +133,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		public void OnEnable()
 		{
+            if (outlineCamera != null) outlineCamera.enabled = true;
 			if (outlinerEffect != null)
 			{
 				outlinerEffect.enabled = true;
@@ -138,6 +142,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		public void OnDisable()
 		{
+            if (outlineCamera != null) outlineCamera.enabled = false;
 			if (outlinerEffect != null)
 			{
 				outlinerEffect.enabled = false;

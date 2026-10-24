@@ -60,3 +60,15 @@ DevAssets/LanuageTranslation/translation_cache_nllb.json
 DevAssets/LanuageTranslation/translation_progress.json
 *.glb
 /CPI Project/Assets/Fabric/Editor/ProjectData
+
+# Local scene recovery snapshots and development notes
+/CPI Project/Assets/_Recovery/
+/CPI Project/Assets/_Recovery.meta
+/FIXES.txt
+/penguin.fbx
+
+# Local credentials and environment overrides
+.env
+.env.*
+!.env.example
+!.env.sample

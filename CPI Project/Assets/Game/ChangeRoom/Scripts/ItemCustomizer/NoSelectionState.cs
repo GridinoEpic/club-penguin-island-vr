@@ -80,7 +80,9 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 				currentGesture = processGesture(touch, currentGesture);
 				break;
 			case TouchPhase.Ended:
-				if (Time.time - currentGesture.TouchStartTime < TapTimeThreshold && Vector2.Distance(touch.position, currentGesture.TouchDownStartPos) < tapDistanceThreshold)
+				if (touch.worldRay.HasValue
+					? Vector2.Distance(touch.position, currentGesture.TouchDownStartPos) <= 12f
+					: Time.time - currentGesture.TouchStartTime < TapTimeThreshold && Vector2.Distance(touch.position, currentGesture.TouchDownStartPos) < tapDistanceThreshold)
 				{
 					switch (currentGesture.TouchDownStartArea)
 					{
@@ -147,24 +149,25 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 				case AreaTouchedEnum.RED_CHANNEL:
 				case AreaTouchedEnum.GREEN_CHANNEL:
 				case AreaTouchedEnum.BLUE_CHANNEL:
+					if (touch.worldRay.HasValue && Vector2.Distance(touch.position, currentGesture.TouchDownStartPos) <= 12f) break;
 					CustomizationContext.EventBus.DispatchEvent(new CustomizerDragEvents.DragOffChannel(currentGesture));
 					break;
 				case AreaTouchedEnum.FABRIC_BUTTON:
-					if (checkButtonDrag(touch.deltaPosition))
+					if (shouldStartButtonDrag(touch))
 					{
 						breadcrumbController.RemovePersistentBreadcrumb(fabricBreadcrumbType, currentGesture.ItemDefinitionId.ToString());
 						CustomizationContext.EventBus.DispatchEvent(new CustomizerDragEvents.DragFabricButton(currentGesture));
 					}
 					break;
 				case AreaTouchedEnum.DECAL_BUTTON:
-					if (checkButtonDrag(touch.deltaPosition))
+					if (shouldStartButtonDrag(touch))
 					{
 						breadcrumbController.RemovePersistentBreadcrumb(decalBreadcrumbType, currentGesture.ItemDefinitionId.ToString());
 						CustomizationContext.EventBus.DispatchEvent(new CustomizerDragEvents.DragDecalButton(currentGesture));
 					}
 					break;
 				case AreaTouchedEnum.TEMPLATE_BUTTON:
-					if (checkButtonDrag(touch.deltaPosition) && currentGesture.IsEquippable)
+					if (shouldStartButtonDrag(touch) && currentGesture.IsEquippable)
 					{
 						breadcrumbController.RemovePersistentBreadcrumb(templateBreadcrumbType, currentGesture.ItemDefinitionId.ToString());
 						CustomizationContext.EventBus.DispatchEvent(new CustomizerDragEvents.DragTemplate(currentGesture));
@@ -178,6 +181,13 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			}
 		}
 
+        private bool shouldStartButtonDrag(ITouch touch)
+        {
+            return touch.worldRay.HasValue
+                ? Vector2.Distance(touch.position, currentGesture.TouchDownStartPos) > 12f
+                : checkButtonDrag(touch.deltaPosition);
+        }
+
 		private CustomizerGestureModel processGesture(ITouch touch, CustomizerGestureModel gestureModel)
 		{
 			gestureModel.TouchDownStartPos = touch.position;
@@ -187,8 +197,8 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 				PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
 				pointerEventData.position = touch.position;
 				List<RaycastResult> list = new List<RaycastResult>();
-				EventSystem.current.RaycastAll(pointerEventData, list);
-				GameObject gameObject = null;
+				if (!touch.worldRay.HasValue) EventSystem.current.RaycastAll(pointerEventData, list);
+				GameObject gameObject = touch.uiTarget;
 				float num = 0f;
 				if (list != null && list.Count > 0)
 				{
@@ -203,7 +213,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 				}
 				if (gameObject != null)
 				{
-					CustomizationButton component = gameObject.GetComponent<CustomizationButton>();
+					CustomizationButton component = gameObject.GetComponentInParent<CustomizationButton>(true);
 					if (component != null && component.CanDrag && component.GetTexture != null)
 					{
 						switch (component.DraggableButtonType)
@@ -239,9 +249,9 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			}
 			else
 			{
-				Ray ray = Camera.main.ScreenPointToRay(touch.position);
+				Ray ray = touch.worldRay ?? Camera.main.ScreenPointToRay(touch.position);
 				RaycastHit hitInfo;
-				if (Physics.Raycast(ray, out hitInfo))
+				if (touch.worldRay.HasValue ? RaycastClothing(ray, out hitInfo) : Physics.Raycast(ray, out hitInfo))
 				{
 					GameObject gameObject2 = hitInfo.collider.gameObject;
 					if (gameObject2.GetComponent<SkinnedMeshRenderer>() != null && gameObject2.GetComponent<SkinnedMeshRenderer>().sharedMaterial.shader.name.Contains("Equipment"))
@@ -290,11 +300,13 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private bool isOverUI(ITouch touch)
 		{
+			if (touch.worldRay.HasValue) return touch.uiTarget != null;
 			return touch.position.y < (float)Screen.height * mainCam.rect.y;
 		}
 
 		private bool isTouchBlockedByUIControls(ITouch touch)
 		{
+			if (touch.worldRay.HasValue) return touch.uiTarget != null;
 			bool result = false;
 			PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
 			pointerEventData.position = touch.position;

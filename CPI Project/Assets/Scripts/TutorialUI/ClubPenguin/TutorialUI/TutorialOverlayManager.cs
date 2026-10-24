@@ -50,7 +50,7 @@ namespace ClubPenguin.TutorialUI
 
 		private bool onShowOverlay(TutorialUIEvents.ShowHighlightOverlay evt)
 		{
-			if (!isShowing)
+			if (!isShowing || overlay == null || !overlay.IsShowing)
 			{
 				Transform parent = base.transform.Find("VertLayout/Layout");
 				overlay = Object.Instantiate(OverlayPrefab).GetComponent<TutorialOverlay>();
@@ -63,11 +63,10 @@ namespace ClubPenguin.TutorialUI
 
 		private bool onHideOverlay(TutorialUIEvents.HideHighlightOverlay evt)
 		{
-			if (isShowing && overlay.gameObject != null)
-			{
-				isShowing = false;
-				overlay.Hide();
-			}
+			TutorialOverlay closingOverlay = overlay;
+			overlay = null;
+			isShowing = false;
+			if (closingOverlay != null) closingOverlay.Hide();
 			return false;
 		}
 

@@ -73,6 +73,8 @@ namespace ClubPenguin
 		private SnowballAimingRays snowballAiming;
 
 		private float chargeTime = 0f;
+        private bool vrRelease;
+        private Vector3 vrReleasePosition, vrReleaseDirection;
 
 		private Animator anim;
 
@@ -118,7 +120,7 @@ namespace ClubPenguin
 			else if (currentState == PenguinSnowballThrowState.Idle)
 			{
 				isPendingChargeSnowball = false;
-				if (snowballAiming != null)
+				if (snowballAiming != null && !PCVRFirstPersonController.TryGetSnowballHand(gameObject, out _, out _))
 				{
 					snowballAiming.Init();
 				}
@@ -143,7 +145,8 @@ namespace ClubPenguin
 			}
 			else if (currentState == PenguinSnowballThrowState.Charge)
 			{
-				chargeTime = _chargeTime;
+				vrRelease = PCVRFirstPersonController.TryGetSnowballHand(gameObject, out vrReleasePosition, out vrReleaseDirection);
+                chargeTime = _chargeTime;
 				setState(PenguinSnowballThrowState.Throw);
 				anim.SetTrigger(launchAnimTrigger);
 				Service.Get<EventDispatcher>().DispatchEvent(new HudEvents.StopSnowballPowerMeter(false));
@@ -165,12 +168,23 @@ namespace ClubPenguin
 		}
 
 		public void LateUpdate()
-		{
+        {
 			if (snowballInst.Snowball != null && !LocomotionUtils.IsThrowingSnowball(LocomotionUtils.GetAnimatorStateInfo(anim, mutableData.AnimLayerIndex)) && !LocomotionUtils.IsChargingSnowball(LocomotionUtils.GetAnimatorStateInfo(anim, mutableData.AnimLayerIndex)))
 			{
 				abortSnowball();
 			}
 		}
+
+        public void UpdateVrHeldSnowball()
+        {
+            if (snowballInst.Snowball == null ||
+                !PCVRFirstPersonController.TryGetSnowballHand(gameObject, out Vector3 hand, out _)) return;
+            // Keep the real ball outside the animated source skeleton. Parenting it
+            // there lets the avatar copier hide it or transform its position twice.
+            snowballInst.Snowball.transform.SetParent(null, true);
+            snowballInst.Snowball.transform.position = vrRelease && currentState == PenguinSnowballThrowState.Throw
+                ? vrReleasePosition : hand;
+        }
 
 		private void abortSnowball()
 		{
@@ -206,6 +220,11 @@ namespace ClubPenguin
 				{
 					snowballInst.Snowball.transform.SetParent(LauncherBone, false);
 					snowballInst.Snowball.transform.localPosition = Vector3.zero;
+                    if (PCVRFirstPersonController.TryGetSnowballHand(gameObject, out Vector3 hand, out _))
+                    {
+                        snowballInst.Snowball.transform.SetParent(null, true);
+                        snowballInst.Snowball.transform.position = hand;
+                    }
 					snowballInst.Snowball.OnAttached();
 					snowballInst.Lifetime.Reset();
 				}
@@ -225,8 +244,13 @@ namespace ClubPenguin
 				Vector3 a = base.transform.TransformDirection(mutableData.ThrowDirection.forward) * d;
 				Vector3 b = Vector3.up * d2;
 				snowballInst.LaunchVel = a + b;
+                if (vrRelease)
+                {
+                    snowballInst.Snowball.transform.position = vrReleasePosition;
+                    snowballInst.LaunchVel = vrReleaseDirection * d + Vector3.up * d2;
+                }
 				snowballInst.TrailAlpha = mutableData.MinTrailAlpha + (mutableData.MaxTrailAlpha - mutableData.MinTrailAlpha) * Mathf.Clamp01(chargeTime / mutableData.MaxChargeTime);
-				if (mutableData.EnableAimAssist)
+				if (mutableData.EnableAimAssist && !vrRelease)
 				{
 					Vector3 position = snowballInst.Snowball.transform.position;
 					Vector3 initialVelocity = mutableData.CharVelocityFactor * charController.velocity + snowballInst.LaunchVel;
@@ -234,9 +258,9 @@ namespace ClubPenguin
 				}
 				LocomotionActionEvent action = default(LocomotionActionEvent);
 				action.Type = LocomotionAction.LaunchThrow;
-				action.Position = base.transform.position;
+				action.Position = vrRelease ? vrReleasePosition : base.transform.position;
 				action.Velocity = snowballInst.LaunchVel;
-				action.Direction = base.transform.forward;
+				action.Direction = vrRelease ? vrReleaseDirection : base.transform.forward;
 				sendNetworkMessage(action);
 				ReleaseSnowball(snowballInst.Snowball.transform.position, snowballInst.LaunchVel, snowballInst.TrailAlpha);
 			}

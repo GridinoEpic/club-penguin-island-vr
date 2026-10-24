@@ -1,3 +1,22 @@
+# Club Penguin Island VR
+
+An experimental Windows PCVR adaptation of [CPI-Project](https://github.com/wednesday2024/CPI-Project), built with Unity and OpenXR.
+
+> [!WARNING]
+> **Playable prototype / work in progress.** The game works overall, but it is unfinished and may contain many glitches. VR interactions, menus, tutorials, clothing customization, and other gameplay may still behave unexpectedly. This is an early development snapshot; a full compatibility and regression pass has not been completed.
+
+## Getting started with PCVR
+
+1. Clone this repository with Git and open the `CPI Project` folder in Unity **6000.3.25f1** with Windows build support.
+2. Let Unity restore packages and import the assets.
+3. Generate the client AssetBundles with `Project -> AssetBundles -> Generated -> Generate client side AssetBundles`.
+4. Connect your PCVR headset and controllers, and activate your headset software's OpenXR runtime.
+5. Choose `CPI VR -> Play PCVR in Editor` (Ctrl+Shift+P) to open the Boot scene and enter Play Mode.
+
+For a Windows player, select `CPI VR -> Enable Windows OpenXR`, then build a Windows 64-bit player through Unity's Build Profiles. Generated builds are excluded from source control.
+
+When reporting a glitch, include your headset, OpenXR runtime, controller model, what you were doing, and steps to reproduce it. The inherited project documentation and credits follow below; its build links refer to upstream releases and do not provide this VR prototype.
+
 # Requirements to Open the Project
 
 > [!IMPORTANT]
@@ -42,7 +61,11 @@
   - `/home/your_username/.config/unity3d/OpenCPI/CP Island/prefs`
  - To launch the game in the Unity editor:
    - Open `Assets/Game/Core/Scenes/Boot.unity`
-  - Hit the Play button.
+   - Hit the Play button.
+ - For faster Windows PCVR iteration, connect the headset and choose `CPI VR -> Play PCVR in Editor` (Ctrl+Shift+P). This enables the Windows OpenXR setup, opens the Boot scene, and enters Play Mode without building the player.
+ - In PCVR, squeeze the left controller's grip to hide or show menus, chat, emotes, and action buttons. Objectives, dialogue, interaction prompts, and collectible counters remain visible. Press the left controller X button to open the phone; its HUD launcher stays hidden. The Home main menu always stays visible when gripping. Tutorials automatically restore navigation and action controls, and keep them available until the tutorial closes; afterward the previous grip visibility returns. Important panels expose their controls only while needed, without leaving the menu open afterward. Collectibles do not reopen menus. Lasers appear only with clickable UI. Shops and changing rooms use upright, fixed world-space panels with the scene still visible behind them; spawning uses headset yaw only. Boot and loading panels stay centered nearby against a #005FC9 blue background. Aim at a button, then press and release the trigger to click it. Visible interactive UI owns the trigger, including panel backgrounds and empty space, so clicks do not talk to characters or activate world interactions. Hold the trigger to drag and release to drop; map jigsaws use the same laser cursor, and the hand that picks up a piece keeps it until release. Visible UI does not itself block walking; gameplay still controls movement during modal interactions. Interaction prompts appear above the right controller (or the left if the right is untracked).
+ - PCVR swimming follows your headset direction, including looking up or down while diving. Pull either flipper backward or flap downward to swim forward, then return your hands forward/up for another stroke. Both flippers together give more propulsion, with a short coast between strokes; the left stick still works. Surface swimming stays horizontal. Strokes stop contributing while movement is locked or a controller is pressing UI. Fishing tutorial prompts close when you reel with controller input, and nearby visible objectives retain their arrow inside the HUD.
+ - The PCVR Home menu surrounds you with Town scenery beside the central fountain. After changing Town's art, use `CPI VR -> Rebuild Town Menu Scenery` to refresh its scenery-only prefab and baked lighting. `CPI VR -> Validate Town Menu Scenery` checks placement and cleanup and renders four preview views under `Library`.
  - **Join our Discord for support, chatting, or for future updates:** [join here](https://discord.gg/jkWbd3uqTS)
 
 > [!IMPORTANT]
@@ -222,3 +245,7 @@
 > miraculizado (Discord)
 
 > approt (Discord)
+
+PCVR actions: Trigger uses the held instrument/item and hooks/reels while fishing; with empty hands it interacts. B also uses the held instrument/item; Y puts it away. Fishing catches appear in the left flipper. Hold right grip to charge a snowball and release to throw from the right hand along its aim.
+
+Foodtrekker and market tutorial instructions stay inside the VR panel. Press and release either controller trigger to continue past an informational tutorial, including when it has disabled the shop buttons.

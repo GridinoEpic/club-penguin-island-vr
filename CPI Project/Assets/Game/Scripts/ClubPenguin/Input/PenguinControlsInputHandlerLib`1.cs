@@ -69,6 +69,8 @@ namespace ClubPenguin.Input
 
 		protected void handleLocomotionInput(LocomotionInputResult locomotionInputResult)
 		{
+			// Desktop/virtual joystick idle events must not overwrite the VR stick.
+			if (PCVRFirstPersonController.OwnsMovement) return;
 			bool flag = disablerManager.IsUIElementDisabled("Joystick");
 			eventDispatcher.DispatchEvent(new InputEvents.MoveEvent(flag ? Vector2.zero : locomotionInputResult.Direction));
 			if (!flag && locomotionInputResult.Rotation.sqrMagnitude > 0f)

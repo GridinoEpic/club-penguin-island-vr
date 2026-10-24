@@ -46,6 +46,14 @@ namespace ClubPenguin.Locomotion
 				switch (forwardAxis)
 				{
 				case AxisIndex.Y:
+					if (PCVRFirstPersonController.OwnsMovement)
+					{
+						// Diving in VR follows the head in three dimensions, rather than
+						// the original game's side-on screen plane.
+						wsForward = GetHeadDirectedSwimDirection(transform.rotation, stickInput);
+						wsUp = Vector3.up;
+						break;
+					}
 					wsForward = stickInput.y * transform.up + stickInput.x * transform.right;
 					wsForward.z = 0f;
 					wsForward.Normalize();
@@ -56,6 +64,16 @@ namespace ClubPenguin.Locomotion
 				case AxisIndex.Z:
 				{
 					Vector3 normalized = Vector3.Scale(transform.forward, new Vector3(1f, 0f, 1f)).normalized;
+					if (PCVRFirstPersonController.OwnsMovement)
+					{
+						// Head roll must not skew left/right steering, including swimming
+						// and tubing states that use this same input conversion.
+						if (normalized.sqrMagnitude < 0.001f)
+							normalized = Vector3.Cross(Vector3.ProjectOnPlane(transform.right, Vector3.up), Vector3.up).normalized;
+						wsForward = (stickInput.y * normalized + stickInput.x * Vector3.Cross(Vector3.up, normalized)).normalized;
+						wsUp = Vector3.up;
+						break;
+					}
 					wsForward = stickInput.y * normalized + stickInput.x * transform.right;
 					wsForward.y = 0f;
 					wsForward.Normalize();
@@ -87,6 +105,14 @@ namespace ClubPenguin.Locomotion
 				}
 			}
 			return result;
+		}
+
+		internal static Vector3 GetHeadDirectedSwimDirection(Quaternion headRotation, Vector2 stickInput)
+		{
+			Vector3 forward = headRotation * Vector3.forward;
+			Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+			if (right.sqrMagnitude < 0.001f) right = Vector3.ProjectOnPlane(headRotation * Vector3.right, Vector3.up).normalized;
+			return (stickInput.y * forward + stickInput.x * right).normalized;
 		}
 
 		public static AnimatorStateInfo GetAnimatorStateInfo(Animator animator, int layerIndex = 0)

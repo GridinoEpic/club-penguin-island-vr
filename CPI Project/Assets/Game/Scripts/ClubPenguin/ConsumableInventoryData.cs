@@ -8,7 +8,10 @@ namespace ClubPenguin
 	[Serializable]
 	public class ConsumableInventoryData : ScopedData
 	{
-		private ConsumableInventory consumableInventory = default(ConsumableInventory);
+		private ConsumableInventory consumableInventory = new ConsumableInventory
+		{
+			inventoryMap = new Dictionary<string, InventoryItemStock>()
+		};
 
 		public ConsumableInventory ConsumableInventory
 		{
@@ -18,6 +21,10 @@ namespace ClubPenguin
 			}
 			internal set
 			{
+				if (value.inventoryMap == null)
+				{
+					value.inventoryMap = new Dictionary<string, InventoryItemStock>();
+				}
 				if (this.OnConsumableInventoryChanged != null)
 				{
 					this.OnConsumableInventoryChanged(value);
@@ -55,6 +62,10 @@ namespace ClubPenguin
 
 		public void AddConsumable(string consumableType, int consumableCount)
 		{
+			if (consumableInventory.inventoryMap == null)
+			{
+				consumableInventory.inventoryMap = new Dictionary<string, InventoryItemStock>();
+			}
 			if (!consumableInventory.inventoryMap.ContainsKey(consumableType))
 			{
 				consumableInventory.inventoryMap[consumableType] = new InventoryItemStock();

@@ -11,6 +11,7 @@ using UnityEngine.Assertions;
 namespace ClubPenguin.UI
 {
 	[RequireComponent(typeof(Canvas))]
+	[DefaultExecutionOrder(10001)]
 	public class InteractInWorldIconController : MonoBehaviour
 	{
 		public enum InteractInWorldIconType
@@ -212,6 +213,18 @@ namespace ClubPenguin.UI
 				Vector3 v = a * (1f / MyCanvas.scaleFactor);
 				indicatorTransform.anchoredPosition = v;
 			}
+		}
+
+		private void LateUpdate()
+		{
+			if (indicatorTransform == null || !indicatorTransform.gameObject.activeInHierarchy ||
+				!PCVRFirstPersonController.TryGetInteractionPromptPose(out Vector3 position, out Quaternion rotation)) return;
+			MyCanvas.renderMode = RenderMode.WorldSpace;
+			MyCanvas.worldCamera = Camera.main;
+			indicatorTransform.SetPositionAndRotation(position, rotation);
+			Vector3 scale = indicatorTransform.parent.lossyScale;
+			indicatorTransform.localScale = new Vector3(0.0012f / Mathf.Max(0.0001f, Mathf.Abs(scale.x)),
+				0.0012f / Mathf.Max(0.0001f, Mathf.Abs(scale.y)), 0.0012f / Mathf.Max(0.0001f, Mathf.Abs(scale.z)));
 		}
 	}
 }

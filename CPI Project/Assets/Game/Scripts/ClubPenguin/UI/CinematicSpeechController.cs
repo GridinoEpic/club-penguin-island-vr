@@ -6,6 +6,8 @@ using Disney.MobileNetwork;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.XR;
 
 namespace ClubPenguin.UI
 {
@@ -22,6 +24,8 @@ namespace ClubPenguin.UI
 		private List<CinematicSpeechBubble> activeSpeechBubbles;
 
 		private Camera gameCamera;
+
+		private bool xrWorldCanvasConfigured;
 
 		private EventChannel eventChannel;
 
@@ -54,7 +58,51 @@ namespace ClubPenguin.UI
 
 		public void Update()
 		{
+			Camera mainCamera = Camera.main;
+			if (mainCamera != null)
+			{
+				gameCamera = mainCamera;
+				if (XRSettings.enabled)
+				{
+					ConfigureWorldCanvasForVr(mainCamera);
+					if (xrWorldCanvasConfigured)
+					{
+						canvas.worldCamera = mainCamera;
+					}
+				}
+			}
+			updateFullscreenButtonVisibility();
 			updateSpeechBubblePositions();
+		}
+
+		private void ConfigureWorldCanvasForVr(Camera mainCamera)
+		{
+			if (xrWorldCanvasConfigured || canvas == null)
+			{
+				return;
+			}
+
+			RectTransform canvasRect = canvas.GetComponent<RectTransform>();
+			if (canvasRect == null)
+			{
+				return;
+			}
+
+			canvas.renderMode = RenderMode.WorldSpace;
+			canvas.worldCamera = mainCamera;
+			canvas.overrideSorting = true;
+			canvasRect.SetParent(null, true);
+			canvasRect.position = Vector3.zero;
+			canvasRect.rotation = Quaternion.identity;
+			canvasRect.localScale = Vector3.one * 0.001f;
+			CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+			if (scaler != null)
+			{
+				scaler.enabled = false;
+			}
+			xrWorldCanvasConfigured = true;
+			updateFullscreenButtonVisibility();
+			Debug.Log("CPI PCVR: converted cinematic dialogue to a world-space canvas for the headset.");
 		}
 
 		private void updateSpeechBubblePositions()
@@ -67,6 +115,12 @@ namespace ClubPenguin.UI
 
 		private void updateSpeechBubblePosition(CinematicSpeechBubble bubble)
 		{
+			if (xrWorldCanvasConfigured)
+			{
+				updateVrSpeechBubblePosition(bubble);
+				return;
+			}
+
 			if (bubble.SpeechData.MascotTarget == null)
 			{
 				float x = canvas.pixelRect.width / 2f * (1f / canvas.scaleFactor);
@@ -96,6 +150,74 @@ namespace ClubPenguin.UI
 			bubble.RectTransform.anchoredPosition = vector;
 		}
 
+		private void updateVrSpeechBubblePosition(CinematicSpeechBubble bubble)
+		{
+			if (gameCamera == null)
+			{
+				return;
+			}
+
+			Vector3 viewForward = Vector3.ProjectOnPlane(gameCamera.transform.forward, Vector3.up).normalized;
+			if (viewForward.sqrMagnitude < 0.001f)
+			{
+				viewForward = Vector3.ProjectOnPlane(gameCamera.transform.root.forward, Vector3.up).normalized;
+			}
+			if (viewForward.sqrMagnitude < 0.001f)
+			{
+				viewForward = Vector3.forward;
+			}
+			Vector3 viewRight = Vector3.Cross(Vector3.up, viewForward).normalized;
+			Vector3 relativeTarget = Vector3.zero;
+			float depth = 1.5f;
+			float horizontalOffset = 0f;
+			float verticalOffset = 0f;
+			if (bubble.SpeechData.MascotTarget != null)
+			{
+				Vector3 targetPosition = bubble.SpeechData.MascotTarget.transform.position;
+				MascotController mascotController = bubble.SpeechData.MascotTarget.GetComponent<MascotController>();
+				if (mascotController != null)
+				{
+					targetPosition += mascotController.QuestIndicatorOffset * 0.6f;
+				}
+				relativeTarget = targetPosition - gameCamera.transform.position;
+				depth = Vector3.Dot(relativeTarget, viewForward);
+				if (depth > 0.25f)
+				{
+					horizontalOffset = Vector3.Dot(relativeTarget, viewRight);
+					verticalOffset = relativeTarget.y;
+				}
+				else
+				{
+					// Keep a speech panel in front of the player if its mascot has moved
+					// behind the headset while the dialogue is still active.
+					depth = 1.5f;
+				}
+			}
+
+			if (bubble.SpeechData.CenterX)
+			{
+				horizontalOffset = 0f;
+			}
+			if (bubble.SpeechData.CenterY)
+			{
+				verticalOffset = 0f;
+			}
+			float viewHeight = 2f * depth * Mathf.Tan(gameCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+			verticalOffset += bubble.SpeechData.OffsetYPercent * viewHeight +
+				bubble.SpeechData.OffsetY * viewHeight / Mathf.Max(1, Screen.height);
+			Vector3 worldPosition = gameCamera.transform.position + viewForward * depth +
+				viewRight * horizontalOffset + Vector3.up * verticalOffset;
+			bubble.RectTransform.position = worldPosition;
+			// Screen-space UI faces along the canvas forward axis. Keep that axis
+			// pointed away from the camera so the readable side faces the player.
+			Vector3 facing = Vector3.ProjectOnPlane(worldPosition - gameCamera.transform.position, Vector3.up).normalized;
+			if (facing.sqrMagnitude < 0.001f)
+			{
+				facing = viewForward;
+			}
+			bubble.RectTransform.rotation = Quaternion.LookRotation(facing, Vector3.up);
+		}
+
 		public void OnDestroy()
 		{
 			clearSpeechBubbles();
@@ -112,6 +234,27 @@ namespace ClubPenguin.UI
 			for (int i = 0; i < activeSpeechBubbles.Count; i++)
 			{
 				activeSpeechBubbles[i].OnBubbleClick();
+			}
+		}
+
+		public bool HandleVrPointerClick()
+		{
+			for (int i = 0; i < activeSpeechBubbles.Count; i++)
+			{
+				if (activeSpeechBubbles[i] != null && activeSpeechBubbles[i].CanClickToClose)
+				{
+					clickActiveSpeechBubbles();
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void updateFullscreenButtonVisibility()
+		{
+			if (fullScreenButton != null)
+			{
+				fullScreenButton.SetActive(!XRSettings.enabled && clickToClose());
 			}
 		}
 
@@ -135,7 +278,7 @@ namespace ClubPenguin.UI
 		{
 			activeSpeechBubbles.Remove(speechBubble);
 			Object.Destroy(speechBubble.gameObject);
-			fullScreenButton.SetActive(clickToClose());
+			updateFullscreenButtonVisibility();
 		}
 
 		private bool onShowCinematicSpeech(CinematicSpeechEvents.ShowSpeechEvent evt)
@@ -195,7 +338,7 @@ namespace ClubPenguin.UI
 			CinematicSpeechBubble cinematicSpeechBubble = speechGameObject.GetComponent<CinematicSpeechBubble>();
 			activeSpeechBubbles.Add(cinematicSpeechBubble);
 			cinematicSpeechBubble.ShowSpeech(speechData);
-			fullScreenButton.SetActive(clickToClose());
+			updateFullscreenButtonVisibility();
 		}
 
 		private bool clickToClose()

@@ -173,6 +173,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 		private float yMax;
 
 		private float screenSafetyZone = 0.5f;
+        private float puzzleUnitScale = 1f;
 
 		private static readonly int maxRaycasts = 4;
 
@@ -195,6 +196,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 
 		private void OnDestroy()
 		{
+			if (dispatcher == null) return;
 			dispatcher.RemoveListener<JigsawEvents.CloseButton>(onCloseButton);
 			dispatcher.RemoveListener<JigsawEvents.BackgroundSolveComplete>(onBackgroundSolveComplete);
 		}
@@ -242,7 +244,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 						Log.LogError(null, string.Format("O_o\t JigsawController.Start: Found duplicate puzzle piece '{0}'. Please make them unique", gameObject.name));
 						return;
 					}
-					SolvePositions.Add(gameObject.name, gameObject.transform.position);
+					SolvePositions.Add(gameObject.name, transform.InverseTransformPoint(gameObject.transform.position));
 					Object.Destroy(gameObject);
 				}
 			}
@@ -260,7 +262,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 					Log.LogError(null, string.Format("O_o\t JigsawController.Start: ERROR -- Found duplicate puzzle piece named {0}'. Please make them unique", gameObject.name));
 					return;
 				}
-				StartPositions.Add(gameObject.name, gameObject.transform.position);
+				StartPositions.Add(gameObject.name, transform.InverseTransformPoint(gameObject.transform.position));
 				GameObject gameObject2 = null;
 				if (!IsMeshPuzzle)
 				{
@@ -333,6 +335,25 @@ namespace ClubPenguin.MiniGames.Jigsaw
 				Log.LogError(null, string.Format("O_o\t JigsawController.Start: ERROR -- Can't find the GUI camera"));
 				return;
 			}
+            // Tolerances were authored in the old orthographic GUI camera's
+            // world units. Preserve their size when solving in panel coordinates.
+            puzzleUnitScale = Mathf.Abs(transform.lossyScale.x);
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (UnityEngine.XR.XRSettings.enabled && canvas != null && guiCam.orthographic)
+            {
+                Canvas root = canvas.rootCanvas;
+                UnityEngine.UI.CanvasScaler scaler = root.GetComponent<UnityEngine.UI.CanvasScaler>();
+                float height = scaler != null ? scaler.referenceResolution.y : ((RectTransform)root.transform).rect.height;
+                float relativeScale = 1f;
+                for (Transform current = transform; current != null && current != root.transform; current = current.parent)
+                    relativeScale *= Mathf.Abs(current.localScale.x);
+                puzzleUnitScale = relativeScale * guiCam.orthographicSize * 2f / Mathf.Max(1f, height);
+            }
+            puzzleUnitScale = Mathf.Max(0.000001f, puzzleUnitScale);
+            shadowLiftOffset /= puzzleUnitScale;
+            shadowDistanceAdjust /= puzzleUnitScale;
+            snapModifier /= puzzleUnitScale;
+            snapDecay /= puzzleUnitScale;
 			CalculateScreenExtents();
 			hasInitalizedPuzzle = true;
 		}
@@ -342,23 +363,82 @@ namespace ClubPenguin.MiniGames.Jigsaw
 			Renderer component = bkgArtworkObj.GetComponent<Renderer>();
 			if (component != null)
 			{
-				xMin = component.bounds.min.x + screenSafetyZone;
-				yMin = component.bounds.min.y + screenSafetyZone;
-				xMax = component.bounds.max.x - screenSafetyZone;
-				yMax = component.bounds.max.y - screenSafetyZone;
+				Bounds bounds = component.GetComponent<MeshFilter>().sharedMesh.bounds;
+                Vector3 min = transform.InverseTransformPoint(component.transform.TransformPoint(bounds.min));
+                Vector3 max = transform.InverseTransformPoint(component.transform.TransformPoint(bounds.max));
+                xMin = Mathf.Min(min.x, max.x) + screenSafetyZone / puzzleUnitScale;
+				yMin = Mathf.Min(min.y, max.y) + screenSafetyZone / puzzleUnitScale;
+				xMax = Mathf.Max(min.x, max.x) - screenSafetyZone / puzzleUnitScale;
+				yMax = Mathf.Max(min.y, max.y) - screenSafetyZone / puzzleUnitScale;
 			}
 		}
 
+        private int? vrDragOwner;
+
+        public bool IsVrPointerVisible
+        {
+            get
+            {
+                if (!isActiveAndEnabled || bkgArtworkColl == null) return false;
+                foreach (CanvasGroup group in GetComponentsInParent<CanvasGroup>())
+                    if (!group.blocksRaycasts || group.alpha <= 0.01f) return false;
+                return true;
+            }
+        }
+
+        public bool ProcessVrPointer(int pointerId, Ray ray, bool down, bool held, bool up,
+            bool overUiControl, out Vector3 point)
+        {
+            point = ray.GetPoint(1.6f);
+            if (!IsVrPointerVisible) { CancelVrPointer(pointerId); return false; }
+            bool overBoard = bkgArtworkColl.Raycast(ray, out RaycastHit boardHit, 10f);
+            if (overBoard) point = boardHit.point;
+            if (vrDragOwner.HasValue && vrDragOwner != pointerId) return false;
+            if (!vrDragOwner.HasValue && (overUiControl || !overBoard)) return false;
+            Vector3 local = transform.InverseTransformPoint(point);
+            TouchPhaseExtended phase = TouchPhaseExtended.Mouse;
+            if (down) { vrDragOwner = pointerId; phase = TouchPhaseExtended.Began; }
+            else if (up && vrDragOwner == pointerId) phase = TouchPhaseExtended.Ended;
+            else if (held && vrDragOwner == pointerId) phase = TouchPhaseExtended.Moved;
+            ProcessInput(phase, local, ray);
+            if (up) vrDragOwner = null;
+            return true;
+        }
+
+        public void CancelVrPointer(int pointerId)
+        {
+            if (vrDragOwner != pointerId) return;
+            if (focusObj != null)
+            {
+                JigsawPiece piece = focusObj.GetComponent<JigsawPiece>();
+                piece.PixelMouseDrop(transform.InverseTransformPoint(focusObj.transform.position) - shadowLiftOffset);
+                piece.PixelMouseExit();
+            }
+            focusObj = oldFocus = null;
+            vrDragOwner = null;
+        }
+
+        private void OnDisable()
+        {
+            if (vrDragOwner.HasValue) CancelVrPointer(vrDragOwner.Value);
+        }
+
 		private void Update()
 		{
+            if (UnityEngine.XR.XRSettings.enabled) return;
+            TouchPhaseExtended phase = getTouchPhase(out Vector3 position);
+            ProcessInput(phase, position, guiCam != null ? guiCam.ScreenPointToRay(position) : default);
+        }
+
+        private void ProcessInput(TouchPhaseExtended phase, Vector3 touchPosition, Ray ray)
+        {
 			if (!hasInitalizedPuzzle || isSolved)
 			{
 				return;
 			}
-			Vector3 touchPosition;
 			RaycastHit hitInfo;
 			Vector3 vector;
-			switch (getTouchPhase(out touchPosition))
+			switch (phase)
 			{
 			case TouchPhaseExtended.Stationary:
 			case TouchPhaseExtended.Canceled:
@@ -369,11 +449,11 @@ namespace ClubPenguin.MiniGames.Jigsaw
 				oldPos = touchPosition;
 				if (IsMeshPuzzle)
 				{
-					focusHit = GetMeshHit(touchPosition);
+					focusHit = GetMeshHit(ray);
 				}
 				else
 				{
-					focusHit = GetPixelHit(touchPosition);
+					focusHit = GetPixelHit(ray);
 				}
 				if (focusHit.collider != null)
 				{
@@ -397,20 +477,20 @@ namespace ClubPenguin.MiniGames.Jigsaw
 					}
 					oldFocus = focusObj;
 				}
-				if (focusObj != null && bkgArtworkColl.Raycast(guiCam.ScreenPointToRay(touchPosition), out hitInfo, 500f))
+				if (focusObj != null && bkgArtworkColl.Raycast(ray, out hitInfo, 500f))
 				{
-					pickupOffset = focusObj.transform.position - hitInfo.point;
+					pickupOffset = transform.InverseTransformPoint(focusObj.transform.position) - transform.InverseTransformPoint(hitInfo.point);
 					pickupOffset.z = 0f;
 					LayerToTop(focusObj.name);
 				}
 				break;
 			case TouchPhaseExtended.Moved:
-				if (focusObj != null && bkgArtworkColl.Raycast(guiCam.ScreenPointToRay(touchPosition), out hitInfo, 500f))
+				if (focusObj != null && bkgArtworkColl.Raycast(ray, out hitInfo, 500f))
 				{
 					JigsawPiece component = focusObj.GetComponent<JigsawPiece>();
-					vector = hitInfo.point + pickupOffset + shadowLiftOffset;
+					vector = transform.InverseTransformPoint(hitInfo.point) + pickupOffset + shadowLiftOffset;
 					vector.z = 0f;
-					if (hitInfo.point.y > areaDividerObj.transform.position.y)
+					if (transform.InverseTransformPoint(hitInfo.point).y > transform.InverseTransformPoint(areaDividerObj.transform.position).y)
 					{
 						focusObj.transform.SetParent(solveContainer, false);
 					}
@@ -445,9 +525,9 @@ namespace ClubPenguin.MiniGames.Jigsaw
 				}
 				Vector3 vector2 = SolvePositions[focusObj.name];
 				vector2.z = 0f;
-				float num = Vector2.Distance(focusObj.transform.position, vector2);
+				float num = Vector2.Distance(transform.InverseTransformPoint(focusObj.transform.position), vector2);
 				JigsawPiece component = focusObj.GetComponent<JigsawPiece>();
-				if (num <= SnapDistance + shadowDistanceAdjust + snapModifier)
+				if (num <= SnapDistance / puzzleUnitScale + shadowDistanceAdjust + snapModifier)
 				{
 					snapModifier -= snapDecay;
 					if (snapModifier < 0f)
@@ -476,7 +556,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 				}
 				else
 				{
-					vector = focusObj.transform.position;
+					vector = transform.InverseTransformPoint(focusObj.transform.position);
 					component = focusObj.GetComponent<JigsawPiece>();
 					component.PixelMouseDrop(vector - shadowLiftOffset);
 				}
@@ -490,11 +570,11 @@ namespace ClubPenguin.MiniGames.Jigsaw
 				oldPos = touchPosition;
 				if (IsMeshPuzzle)
 				{
-					focusHit = GetMeshHit(touchPosition);
+					focusHit = GetMeshHit(ray);
 				}
 				else
 				{
-					focusHit = GetPixelHit(touchPosition);
+					focusHit = GetPixelHit(ray);
 				}
 				if (focusHit.collider != null)
 				{
@@ -572,12 +652,12 @@ namespace ClubPenguin.MiniGames.Jigsaw
 			}
 		}
 
-		private RaycastHit GetPixelHit(Vector3 touchPosition)
+		private RaycastHit GetPixelHit(Ray ray)
 		{
 			GameObject gameObject = null;
 			RaycastHit result = default(RaycastHit);
 			int layerMask = 1 << LayerMask.NameToLayer("UI");
-			int num = Physics.RaycastNonAlloc(guiCam.ScreenPointToRay(touchPosition), raycastHits, float.PositiveInfinity, layerMask);
+			int num = Physics.RaycastNonAlloc(ray, raycastHits, float.PositiveInfinity, layerMask);
 			if (num == 0)
 			{
 				return result;
@@ -597,7 +677,7 @@ namespace ClubPenguin.MiniGames.Jigsaw
 					try
 					{
 						float a = texture2D.GetPixel((int)textureCoord.x, (int)textureCoord.y).a;
-						if (a > 0.5f && (gameObject == null || raycastHit.transform.gameObject.transform.position.z < gameObject.transform.position.z))
+						if (a > 0.5f && (gameObject == null || transform.InverseTransformPoint(raycastHit.transform.position).z < transform.InverseTransformPoint(gameObject.transform.position).z))
 						{
 							gameObject = raycastHit.transform.gameObject;
 							result = raycastHit;
@@ -611,11 +691,11 @@ namespace ClubPenguin.MiniGames.Jigsaw
 			return result;
 		}
 
-		private RaycastHit GetMeshHit(Vector3 touchPosition)
+		private RaycastHit GetMeshHit(Ray ray)
 		{
 			int layerMask = 1 << LayerMask.NameToLayer("UI");
 			RaycastHit hitInfo;
-			if (!Physics.Raycast(guiCam.ScreenPointToRay(touchPosition), out hitInfo, float.PositiveInfinity, layerMask))
+			if (!Physics.Raycast(ray, out hitInfo, float.PositiveInfinity, layerMask))
 			{
 				return hitInfo;
 			}

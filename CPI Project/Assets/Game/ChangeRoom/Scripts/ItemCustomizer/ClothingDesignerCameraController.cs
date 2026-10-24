@@ -52,6 +52,8 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private bool checkPosition;
 
+        public ClothingDesignerCameraState CurrentCameraState { get; private set; } = ClothingDesignerCameraState.Inventory;
+
 		private void Awake()
 		{
 			CameraCullingMaskHelper.HideLayer(Camera.main, "IconRender");
@@ -85,6 +87,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 		private bool onUpdateCameraState(ClothingDesignerUIEvents.UpdateCameraState evt)
 		{
 			ClothingDesignerCameraState cameraState = evt.CameraState;
+            if (cameraState != ClothingDesignerCameraState.Default) CurrentCameraState = cameraState;
 			bool animateCamera = evt.AnimateCamera;
 			ClothingDesignerCameraData cameraData = getCameraData(cameraState);
 			switch (cameraState)
@@ -110,6 +113,16 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			targetPosition = newPosition;
 			targetRotation = Quaternion.Euler(newRotation);
 			targetFOV = FOV;
+			// The headset owns the camera pose. Screen initialization must still
+			// receive completion instead of waiting for an unreachable camera position.
+			if (UnityEngine.XR.XRSettings.enabled)
+			{
+                PCVRFirstPersonController.SetClothingDesignerView(mainCamera, newPosition, Quaternion.Euler(newRotation));
+				isAnimatingCamera = false;
+				checkPosition = false;
+				ClothingDesignerContext.EventBus.DispatchEvent(default(ClothingDesignerUIEvents.CameraPositionChangeComplete));
+				return;
+			}
 			if (isAnimated)
 			{
 				isAnimatingCamera = true;
@@ -126,6 +139,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private bool frameObjectWithCamera(CustomizerUIEvents.CameraZoomInOnGameObject evt)
 		{
+			if (UnityEngine.XR.XRSettings.enabled) return false;
 			isAnimatingCamera = true;
 			Quaternion rotation = evt.ObjectTransform.transform.rotation;
 			evt.ObjectTransform.rotation = Quaternion.identity;
@@ -158,6 +172,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private bool onStartPurchaseMoment(CustomizerUIEvents.StartPurchaseMoment evt)
 		{
+			if (UnityEngine.XR.XRSettings.enabled) return false;
 			if (!wasOriginalViewportSet)
 			{
 				originalViewport = mainCamera.rect;
@@ -170,6 +185,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private bool onEndPurchaseMoment(CustomizerUIEvents.EndPurchaseMoment evt)
 		{
+			if (UnityEngine.XR.XRSettings.enabled) return false;
 			isAnimatingViewport = true;
 			targetViewport = originalViewport;
 			return false;
@@ -177,6 +193,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 
 		private void Update()
 		{
+			if (UnityEngine.XR.XRSettings.enabled) return;
 			if (isAnimatingCamera)
 			{
 				mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, targetFOV, 5f * Time.deltaTime);
@@ -220,7 +237,7 @@ namespace ClubPenguin.ClothingDesigner.ItemCustomizer
 			}
 			if (customizationEventChannel != null)
 			{
-				clothingDesignerEventChannel.RemoveAllListeners();
+				customizationEventChannel.RemoveAllListeners();
 			}
 		}
 	}

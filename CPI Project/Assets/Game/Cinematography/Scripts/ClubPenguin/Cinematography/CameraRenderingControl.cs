@@ -39,6 +39,8 @@ namespace ClubPenguin.Cinematography
 
 		public void SetRenderingState(bool enabled, bool includeChat, bool cullUILayer)
 		{
+			// The headset must retain the world and the world-space popup canvases.
+			if (UnityEngine.XR.XRSettings.enabled && !enabled) return;
 			if (renderingState == enabled)
 			{
 				return;

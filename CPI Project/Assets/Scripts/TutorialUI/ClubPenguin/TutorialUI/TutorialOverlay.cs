@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace ClubPenguin.TutorialUI
 {
-	internal class TutorialOverlay : MonoBehaviour
+	public class TutorialOverlay : MonoBehaviour
 	{
 		public const float DEFAULT_OVERLAY_OPACITY = 0.6f;
 
@@ -61,7 +61,11 @@ namespace ClubPenguin.TutorialUI
 
 		private bool hasDispatchedHideEvents = false;
 
-		public Vector2 HighlightPosition
+		// VR raycasters need to distinguish a guided target from the decorative
+        // canvas surrounding it, including siblings outside this CanvasGroup.
+        public GameObject InteractiveTarget => isShowing && data != null && data.EnableTarget ? data.Target : null;
+
+        public Vector2 HighlightPosition
 		{
 			get
 			{
@@ -88,7 +92,10 @@ namespace ClubPenguin.TutorialUI
 		public void SetHighlight(DTutorialOverlay overlayData)
 		{
 			data = overlayData;
+			isShowing = true;
 			Vector3 worldPoint = Vector3.zero;
+			Vector2 targetCanvasPosition = Vector2.zero;
+			bool hasTargetCanvasPosition = false;
 			highlightSize = Vector2.zero;
 			if (data.Target != null)
 			{
@@ -97,9 +104,37 @@ namespace ClubPenguin.TutorialUI
 				{
 					Canvas componentInParent = data.Target.GetComponentInParent<Canvas>();
 					worldPoint = component.position;
-					if (componentInParent.renderMode == RenderMode.ScreenSpaceCamera)
+					Canvas overlayCanvas = GetComponentInParent<Canvas>();
+					RectTransform overlayRect = overlayCanvas != null
+						? overlayCanvas.rootCanvas.GetComponent<RectTransform>()
+						: null;
+					if (componentInParent != null && overlayRect != null &&
+						componentInParent.rootCanvas.renderMode == RenderMode.WorldSpace &&
+						overlayCanvas.rootCanvas.renderMode == RenderMode.WorldSpace)
 					{
-						worldPoint = RectTransformUtility.WorldToScreenPoint(componentInParent.worldCamera, worldPoint);
+						// Both canvases have been converted to world space for VR. Map the
+						// target directly into the overlay's own design units; projecting to
+						// headset pixels shrinks the target toward the screen center.
+						Vector3 localTarget = overlayRect.InverseTransformPoint(component.position);
+						targetCanvasPosition = new Vector2(
+							localTarget.x - overlayRect.rect.xMin,
+							localTarget.y - overlayRect.rect.yMin);
+						hasTargetCanvasPosition = true;
+					}
+					else if (componentInParent != null &&
+						(componentInParent.renderMode == RenderMode.ScreenSpaceCamera ||
+						 componentInParent.renderMode == RenderMode.WorldSpace))
+					{
+						// The PCVR bridge converts screen overlay canvases to World Space.
+						// Tutorial positions are laid out in screen coordinates, so project
+						// the target back to pixels before positioning the highlight/callout.
+						Camera targetCamera = componentInParent.worldCamera != null
+							? componentInParent.worldCamera
+							: Camera.main;
+						if (targetCamera != null)
+						{
+							worldPoint = RectTransformUtility.WorldToScreenPoint(targetCamera, worldPoint);
+						}
 					}
 					if (data.AutoSize)
 					{
@@ -121,7 +156,11 @@ namespace ClubPenguin.TutorialUI
 				SystemBarsData component3 = Service.Get<CPDataEntityCollection>().GetComponent<SystemBarsData>(entityByType);
 				num = component3.CurrentNavigationBarHeight;
 			}
-			if (data.Target != null)
+			if (data.Target != null && hasTargetCanvasPosition)
+			{
+				highlightPosition = targetCanvasPosition + data.Position;
+			}
+			else if (data.Target != null)
 			{
 				highlightPosition = new Vector2((data.Position.x + worldPoint.x) * vector.x, (data.Position.y - (float)num + worldPoint.y) * vector.y);
 			}
@@ -147,34 +186,82 @@ namespace ClubPenguin.TutorialUI
 				Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.DisableUIElement("Joystick"));
 				if (data.Target != null && data.EnableTarget)
 				{
-					UIElementDisabler component4 = data.Target.GetComponent<UIElementDisabler>();
+					UIElementDisabler component4 = data.Target.GetComponentInParent<UIElementDisabler>() ?? data.Target.GetComponentInChildren<UIElementDisabler>();
 					if (component4 != null)
 					{
 						Service.Get<EventDispatcher>().DispatchEvent(new UIDisablerEvents.EnableUIElement(component4.UIElementID));
 					}
 				}
 			}
-			UpdateHighlightOutline(data.ShowHighlightOutline);
+			if (data.Target != null && data.EnableTarget)
+            {
+                Button targetButton = data.Target.GetComponentInParent<Button>() ?? data.Target.GetComponentInChildren<Button>();
+                if (targetButton != null) targetButton.interactable = true;
+            }
+            UpdateHighlightOutline(data.ShowHighlightOutline);
 			enableUIElementsOnClose = data.DisableUI;
-			GetComponent<CanvasGroup>().blocksRaycasts = data.BlocksRaycast;
+			// A targeted tutorial has to leave the highlighted control reachable.
+			// This overlay is a full-screen graphic, so blocking raycasts here would
+			// cover the target as well as the dimmed background.
+			GetComponent<CanvasGroup>().blocksRaycasts = data.BlocksRaycast && data.Target == null;
 			Service.Get<BackButtonController>().Add(onBackClicked);
 		}
 
 		private void onBackClicked()
 		{
-			Service.Get<BackButtonController>().Add(onBackClicked);
+			Service.Get<EventDispatcher>().DispatchEvent(default(TutorialUIEvents.HideHighlightOverlay));
+			Service.Get<EventDispatcher>().DispatchEvent(default(TutorialUIEvents.ResetTutorialUISorting));
+			if (Service.IsSet<ClubPenguin.Tutorial.TutorialManager>())
+				Service.Get<ClubPenguin.Tutorial.TutorialManager>().EndTutorial();
+		}
+
+		private void LateUpdate()
+		{
+			if (!isShowing || data == null) return;
+			Canvas canvas = GetComponentInParent<Canvas>();
+			if (canvas == null || canvas.rootCanvas.renderMode != RenderMode.WorldSpace) return;
+			RectTransform canvasRect = canvas.rootCanvas.GetComponent<RectTransform>();
+			Vector2 position = GetWorldCanvasHighlightPosition(canvasRect, data.Target, data.Position);
+			Vector2 size = data.Size;
+			RectTransform targetRect = data.Target != null ? data.Target.GetComponent<RectTransform>() : null;
+			if (data.AutoSize && targetRect != null)
+			{
+				Vector3[] corners = new Vector3[4];
+				targetRect.GetWorldCorners(corners);
+				size += new Vector2(
+					canvasRect.InverseTransformVector(corners[3] - corners[0]).magnitude,
+					canvasRect.InverseTransformVector(corners[1] - corners[0]).magnitude);
+			}
+			if (position == highlightPosition && size == highlightSize) return;
+			highlightPosition = position;
+			highlightSize = size;
+			updateBackground();
+			updatePopup(false);
+			UpdateHighlightOutline(data.ShowHighlightOutline);
+		}
+
+		private static Vector2 GetWorldCanvasHighlightPosition(RectTransform canvasRect, GameObject target, Vector2 position)
+		{
+			if (target == null) return Vector2.Scale(canvasRect.rect.size, position);
+			Vector3 localTarget = canvasRect.InverseTransformPoint(target.transform.position);
+			return new Vector2(localTarget.x - canvasRect.rect.xMin, localTarget.y - canvasRect.rect.yMin) + position;
 		}
 
 		public void Hide()
 		{
-			GetComponent<Animator>().SetTrigger("Close");
+			if (!isShowing) return;
+			isShowing = false;
 			dispatchHideEvents();
+			// UI animators can be paused or culled in VR. Closing a tutorial
+			// must remove its graphics and hit targets without an animation event.
+			base.gameObject.SetActive(false);
+			Object.Destroy(base.gameObject);
 		}
 
 		private void dispatchHideEvents()
 		{
-			Service.Get<BackButtonController>().Remove(onBackClicked);
-			if (!hasDispatchedHideEvents && enableUIElementsOnClose)
+			if (Service.IsSet<BackButtonController>()) Service.Get<BackButtonController>().Remove(onBackClicked);
+			if (!hasDispatchedHideEvents && enableUIElementsOnClose && Service.IsSet<EventDispatcher>())
 			{
 				Service.Get<EventDispatcher>().DispatchEvent(default(UIDisablerEvents.EnableAllUIElements));
 				hasDispatchedHideEvents = true;
@@ -203,7 +290,7 @@ namespace ClubPenguin.TutorialUI
 			CenterBGGroup.GetComponent<LayoutElement>().preferredHeight = highlightSize.y;
 		}
 
-		private void updatePopup()
+		private void updatePopup(bool loadArrow = true)
 		{
 			if (string.IsNullOrEmpty(data.Text))
 			{
@@ -256,11 +343,36 @@ namespace ClubPenguin.TutorialUI
 			}
 			PopupArrow.anchoredPosition = highlightPosition + b + new Vector2(200f, 200f);
 			TextBox.anchoredPosition = highlightPosition + b2 + new Vector2(200f, 200f);
+			Canvas canvas = GetComponentInParent<Canvas>();
+			if (canvas != null && canvas.rootCanvas.renderMode == RenderMode.WorldSpace)
+				ClampTextBoxToCanvas(TextBox, canvas.rootCanvas.GetComponent<RectTransform>());
+			if (!loadArrow) return;
 			PopupArrow.gameObject.SetActive(false);
 			if (data.ShowArrow)
 			{
 				Content.LoadAsync(onArrowAssetLoaded, arrowIconContentKey, text);
 			}
+		}
+
+		private static void ClampTextBoxToCanvas(RectTransform textBox, RectTransform canvasRect)
+		{
+			Canvas.ForceUpdateCanvases();
+			RectTransform parent = textBox.parent as RectTransform;
+			if (parent == null) return;
+			Vector3[] corners = new Vector3[4];
+			canvasRect.GetWorldCorners(corners);
+			Vector2 min = parent.InverseTransformPoint(corners[0]);
+			Vector2 max = parent.InverseTransformPoint(corners[2]);
+			textBox.GetWorldCorners(corners);
+			Vector2 textMin = parent.InverseTransformPoint(corners[0]);
+			Vector2 textMax = parent.InverseTransformPoint(corners[2]);
+			Vector2 correction = Vector2.zero;
+			const float margin = 24f;
+			if (textMin.x < min.x + margin) correction.x = min.x + margin - textMin.x;
+			else if (textMax.x > max.x - margin) correction.x = max.x - margin - textMax.x;
+			if (textMin.y < min.y + margin) correction.y = min.y + margin - textMin.y;
+			else if (textMax.y > max.y - margin) correction.y = max.y - margin - textMax.y;
+			textBox.anchoredPosition += correction;
 		}
 
 		private void UpdateHighlightOutline(bool showOutline)
@@ -290,6 +402,7 @@ namespace ClubPenguin.TutorialUI
 
 		private void onArrowAssetLoaded(string path, Sprite sprite)
 		{
+			if (this == null || !isShowing) return;
 			PopupArrow.transform.Find("Icon").GetComponent<Image>().sprite = sprite;
 			PopupArrow.gameObject.SetActive(true);
 			if (data.ArrowPosition == TutorialOverlayArrowPosition.LEFT || data.ArrowPosition == TutorialOverlayArrowPosition.RIGHT)
