@@ -33,6 +33,8 @@ namespace ClubPenguin.Input
 
 		private bool runActionSprintModifier;
 
+		private bool isTubeEnabled;
+
 		private RunController runController;
 
 		private LocomotionEventBroadcaster locomotionEventBroadcaster;
@@ -41,6 +43,8 @@ namespace ClubPenguin.Input
 		{
 			locomotionEventBroadcaster = localPlayer.GetComponent<LocomotionEventBroadcaster>();
 			runController = localPlayer.GetComponent<RunController>();
+			isTubeEnabled = LocomotionHelper.IsCurrentControllerOfType<SlideController>(localPlayer);
+			runActionSprintModifier = runController != null && runController.IsRunActionSprintModifier;
 			base.identifiedLocalPlayer(localPlayer);
 		}
 
@@ -91,8 +95,8 @@ namespace ClubPenguin.Input
 			handleButtonInput(btnSprint);
 			walkModifier = false;
 			sprintModifier = false;
-			runActionSprintModifier = false;
-			setSprintButtonState(false);
+			runActionSprintModifier = runController != null && runController.IsRunActionSprintModifier;
+			setSprintButtonState(runActionSprintModifier);
 			if (runController != null && runController.enabled)
 			{
 				runController.Behaviour.SetStyle(PlayerLocoStyle.Style.Run);
@@ -107,7 +111,10 @@ namespace ClubPenguin.Input
 				TrayInputButton trayInputButton = btnSprint.GetComponentInParent<TrayInputButton>();
 				if (trayInputButton != null && !trayInputButton.IsLocked)
 				{
-					trayInputButton.SetState(isSprinting ? TrayInputButton.ButtonState.Highlighted : TrayInputButton.ButtonState.Default);
+					TrayInputButton.ButtonState buttonState = isTubeEnabled
+						? TrayInputButton.ButtonState.Disabled
+						: (isSprinting ? TrayInputButton.ButtonState.Highlighted : TrayInputButton.ButtonState.Default);
+					trayInputButton.SetState(buttonState);
 				}
 			}
 		}
@@ -143,6 +150,12 @@ namespace ClubPenguin.Input
 
 		private void onControllerChanged(LocomotionController newController)
 		{
+			isTubeEnabled = newController is SlideController;
+			if (newController == runController)
+			{
+				runActionSprintModifier = runController.IsRunActionSprintModifier;
+			}
+			setSprintButtonState(sprintModifier || runActionSprintModifier);
 			if (runController != null && runController.enabled)
 			{
 				runController.Behaviour.SetStyle(walkModifier ? PlayerLocoStyle.Style.Walk : PlayerLocoStyle.Style.Run);

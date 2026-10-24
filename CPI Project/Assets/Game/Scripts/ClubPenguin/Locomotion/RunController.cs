@@ -243,6 +243,14 @@ namespace ClubPenguin.Locomotion
 			runActionSprintModifier = isHeld;
 		}
 
+		public bool IsRunActionSprintModifier
+		{
+			get
+			{
+				return runActionSprintModifier;
+			}
+		}
+
 		private bool IsSprintRequested
 {
 	get { return sprintModifier || runActionSprintModifier; }
