@@ -5,7 +5,13 @@ An experimental Windows PCVR adaptation of [CPI-Project](https://github.com/wedn
 > [!WARNING]
 > **Playable prototype / work in progress.** The game works overall, but it is unfinished and may contain many glitches. VR interactions, menus, tutorials, clothing customization, and other gameplay may still behave unexpectedly. This is an early development snapshot; a full compatibility and regression pass has not been completed.
 
-## Getting started with PCVR
+## Download and play
+
+Get the Windows PCVR build from [this repository's Releases](https://github.com/GridinoEpic/club-penguin-island-vr/releases). Download `Club-Penguin-Island-VR-Windows-x64.zip`, extract the entire ZIP, connect your headset and controllers with your PC OpenXR runtime active, and run `CP Island.exe`. Keep the executable and all included data files together. Unity Editor is not required to play.
+
+This is a Windows 64-bit PCVR build, not a standalone Quest/Android app. The automatically generated source-code archives are for developers.
+
+## Getting started with PCVR development
 
 1. Run `git clone https://github.com/GridinoEpic/club-penguin-island-vr.git` and open the `CPI Project` folder in Unity **6000.3.25f1** with Windows build support.
 2. Let Unity restore packages and import the assets.
