@@ -7,7 +7,7 @@ An experimental Windows PCVR adaptation of [CPI-Project](https://github.com/wedn
 
 ## Getting started with PCVR
 
-1. Clone this repository with Git and open the `CPI Project` folder in Unity **6000.3.25f1** with Windows build support.
+1. Run `git clone https://github.com/GridinoEpic/club-penguin-island-vr.git` and open the `CPI Project` folder in Unity **6000.3.25f1** with Windows build support.
 2. Let Unity restore packages and import the assets.
 3. Generate the client AssetBundles with `Project -> AssetBundles -> Generated -> Generate client side AssetBundles`.
 4. Connect your PCVR headset and controllers, and activate your headset software's OpenXR runtime.
@@ -34,10 +34,10 @@ When reporting a glitch, include your headset, OpenXR runtime, controller model,
 > - I do NOT recommend using GitHub's built in ZIP download feature. Because it tends to forget to download files which breaks the project. I only recommend using the older HTTPS git clone or the new Git CLI gh repo clone options to download the repo on Linux. If you are on Windows or macOS, I recommend using git clone or using the official GitHub Desktop app. 
 
 > HTTPS method:
-> ```git clone https://github.com/wednesday2024/CPI-Project.git```
+> ```git clone https://github.com/GridinoEpic/club-penguin-island-vr.git```
 
 > Git CLI method:
-> ```gh repo clone wednesday2024/CPI-Project```
+> ```gh repo clone GridinoEpic/club-penguin-island-vr```
 
 > [The Github Desktop app method](https://github.com/apps/desktop)
 
