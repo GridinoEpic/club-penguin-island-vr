@@ -3354,6 +3354,7 @@ asset:definitions/controlsscreen/locomotion/sitgroupdefinition?dl=res&x=asset
 asset:definitions/controlsscreen/locomotion/sitswimgroupdefinition?dl=res&x=asset
 asset:definitions/controlsscreen/locomotion/slidebuttondefinition?dl=res&x=asset
 asset:definitions/controlsscreen/locomotion/snowballbuttondefinition?dl=res&x=asset
+asset:definitions/controlsscreen/locomotion/sprintbuttondefinition?dl=res&x=asset
 asset:definitions/controlsscreen/microphone/microphone1buttondefinition?dl=res&x=asset
 asset:definitions/controlsscreen/microphone/microphone2buttondefinition?dl=res&x=asset
 asset:definitions/controlsscreen/microphone/microphone3buttondefinition?dl=res&x=asset
@@ -3969,6 +3970,7 @@ asset:prefabs/controlsscreen/dynamic/jumpbutton?dl=res&x=prefab
 asset:prefabs/controlsscreen/dynamic/resurfacebutton?dl=res&x=prefab
 asset:prefabs/controlsscreen/dynamic/slidebutton?dl=res&x=prefab
 asset:prefabs/controlsscreen/dynamic/snowballbutton?dl=res&x=prefab
+asset:prefabs/controlsscreen/dynamic/sprintbutton?dl=res&x=prefab
 asset:prefabs/controlsscreen/dynamic/swimbutton?dl=res&x=prefab
 asset:prefabs/dailyspinwheelitem?dl=res&x=prefab
 asset:prefabs/dancebattle/dancebattlelobbyitem?dl=res&x=prefab
@@ -16179,5 +16181,5 @@ asset:quests/aac002q005storm/zones/beach/triggers/triggeractwood05?dl=bundle:sa-
 asset:quests/aac002q005storm/zones/boardwalk/objects/compscreenherbert/sourceassets/herbertscreenmodel?dl=bundle:sa-bundle&x=fbx&b=assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d&p=game/adventure/assetbundles
 bundle:assetbundles/generated/standalonewindows64/quest/auntarctic/c02q05.sa.unity3d?d=&p=0
 baseuri:
-contentversion:a86ca4172afb97431ca14829392c46a3c72d545c
+contentversion:c651d5a186101556dc49a210bb392097d6597dea
 contentmanifesthash:

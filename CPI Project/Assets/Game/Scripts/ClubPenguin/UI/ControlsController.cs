@@ -305,7 +305,9 @@ namespace ClubPenguin.UI
 
 		private bool shouldUseButtonOverrides(InputButtonGroupDefinition groupDefinition)
 		{
-			if (currentGroupDefinition != null && currentGroupDefinition.TemplateContentKey.Key == groupDefinition.TemplateContentKey.Key)
+			if (currentGroupDefinition != null &&
+				currentGroupDefinition.TemplateContentKey.Key == groupDefinition.TemplateContentKey.Key &&
+				currentGroupDefinition.InputButtonDefinitions.Length == groupDefinition.InputButtonDefinitions.Length)
 			{
 				for (int i = 0; i < groupDefinition.InputButtonDefinitions.Length; i++)
 				{

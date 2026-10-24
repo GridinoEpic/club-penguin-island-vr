@@ -24,9 +24,14 @@ namespace ClubPenguin.Input
 		[SerializeField]
 		private InputMappedButton btnCancel = null;
 
+		[SerializeField]
+		private InputMappedButton btnSprint = null;
+
 		private bool walkModifier;
 
 		private bool sprintModifier;
+
+		private bool runActionSprintModifier;
 
 		private RunController runController;
 
@@ -42,12 +47,14 @@ namespace ClubPenguin.Input
 		protected override void OnEnable()
 		{
 			locomotionEventBroadcaster.OnControllerChangedEvent += onControllerChanged;
+			eventDispatcher.AddListener<InputEvents.ActionEvent>(onAction);
 			base.OnEnable();
 		}
 
 		protected override void OnDisable()
 		{
 			locomotionEventBroadcaster.OnControllerChangedEvent -= onControllerChanged;
+			eventDispatcher.RemoveListener<InputEvents.ActionEvent>(onAction);
 			base.OnDisable();
 		}
 
@@ -59,8 +66,10 @@ namespace ClubPenguin.Input
 			handleButtonInput(btnAction2, inputResult.Action2);
 			handleButtonInput(btnAction3, inputResult.Action3);
 			handleButtonInput(btnCancel, inputResult.Cancel);
+			handleButtonInput(btnSprint, inputResult.SprintModifier);
 			walkModifier = inputResult.WalkModifier.IsHeld;
 			sprintModifier = inputResult.SprintModifier.IsHeld;
+			setSprintButtonState(sprintModifier || runActionSprintModifier);
 			if (runController != null && runController.enabled)
 			{
 				runController.SetSprintModifier(sprintModifier);
@@ -79,13 +88,40 @@ namespace ClubPenguin.Input
 			handleButtonInput(btnAction2);
 			handleButtonInput(btnAction3);
 			handleButtonInput(btnCancel);
+			handleButtonInput(btnSprint);
 			walkModifier = false;
 			sprintModifier = false;
+			runActionSprintModifier = false;
+			setSprintButtonState(false);
 			if (runController != null && runController.enabled)
 			{
 				runController.Behaviour.SetStyle(PlayerLocoStyle.Style.Run);
 				runController.SetSprintModifier(false);
 			}
+		}
+
+		private void setSprintButtonState(bool isSprinting)
+		{
+			if (btnSprint != null)
+			{
+				TrayInputButton trayInputButton = btnSprint.GetComponentInParent<TrayInputButton>();
+				if (trayInputButton != null && !trayInputButton.IsLocked)
+				{
+					trayInputButton.SetState(isSprinting ? TrayInputButton.ButtonState.Highlighted : TrayInputButton.ButtonState.Default);
+				}
+			}
+		}
+
+		private bool onAction(InputEvents.ActionEvent evt)
+		{
+#if UNITY_IOS || UNITY_ANDROID
+			if (evt.Action == InputEvents.Actions.Sprint)
+			{
+				runActionSprintModifier = !runActionSprintModifier;
+				setSprintButtonState(sprintModifier || runActionSprintModifier);
+			}
+#endif
+			return false;
 		}
 
 		private void handleButtonInput(InputMappedButton button, ButtonInputResult buttonInput = null)
